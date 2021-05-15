@@ -15,12 +15,24 @@ class GUI():
 
     def run(self):
         # Frames
-        topFrame = Frame(self.root)
-        topFrame.pack(side=TOP)
-        middleFrame = Frame(self.root)
-        middleFrame.pack(side=TOP)
-        bottomFrame = Frame(self.root)
-        bottomFrame.pack(side=TOP)
+        topFrame = Frame(
+            self.root,
+            bg=self.color_background,
+            height=100
+        )
+        middleFrame = Frame(
+            self.root,
+            bg=self.color_background,
+            height=100
+        )
+        bottomFrame = Frame(
+            self.root,
+            bg=self.color_background,
+            height=200
+        )
+        topFrame.pack(side=TOP,    fill=BOTH, expand=True)
+        middleFrame.pack(side=TOP, fill=BOTH, expand=True)
+        bottomFrame.pack(side=TOP, fill=BOTH, expand=True)
         # Widgets
         label1 = Label(
             topFrame,
@@ -28,8 +40,8 @@ class GUI():
             font=("Arial", 30),
             fg=self.color_font,
             bg=self.color_background,
-            height=5,
-            width=50
+            height=1,
+            width=40
         )
         label2 = Label(
             bottomFrame,
@@ -37,8 +49,8 @@ class GUI():
             font=("Arial", 30),
             fg=self.color_font,
             bg=self.color_background,
-            height=10,
-            width=50
+            height=1,
+            width=40
         )
         button1 = Button(
             middleFrame,
@@ -54,11 +66,15 @@ class GUI():
             fg="gray10",
             bg="firebrick2"
         )
+        text_box = Text(
+            bottomFrame
+        )
         
         label1.pack(side=TOP)
-        button1.pack(side=TOP)
-        button2.pack(side=TOP)
+        button1.pack(side=LEFT)
+        button2.pack(side=LEFT)
         label2.pack(side=TOP)
+        text_box.pack(side=TOP)
 
 def main():
     root = Tk()
