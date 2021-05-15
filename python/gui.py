@@ -15,24 +15,24 @@ class GUI():
 
     def run(self):
         # Frames
-        topFrame = Frame(
+        frame_top = Frame(
             self.root,
             bg=self.color_background,
             height=100
         )
-        middleFrame = Frame(
+        frame_middle = Frame(
             self.root,
             bg=self.color_background,
             height=100
         )
-        bottomFrame = Frame(
+        frame_bottom = Frame(
             self.root,
             bg=self.color_background,
             height=200
         )
-        topFrame.pack(side=TOP,    fill=BOTH, expand=True)
-        middleFrame.pack(side=TOP, fill=BOTH, expand=True)
-        bottomFrame.pack(side=TOP, fill=BOTH, expand=True)
+        frame_top.pack(side=TOP,    fill=BOTH, expand=True)
+        frame_middle.pack(side=TOP, fill=BOTH, expand=True)
+        frame_bottom.pack(side=TOP, fill=BOTH, expand=True)
         # Widgets
         cable_types = [
             "Type 1",
@@ -44,13 +44,13 @@ class GUI():
         cable_type = StringVar(self.root)
         cable_type.set(cable_types[0])
         cable_type_menu = OptionMenu(
-            middleFrame,
+            frame_middle,
             cable_type,
             *cable_types
         )
         cable_type_menu.config(font=("Arial", 20))
-        label1 = Label(
-            topFrame,
+        label_title = Label(
+            frame_top,
             text="Cable Continuity Tester",
             font=("Arial", 30),
             fg=self.color_font,
@@ -58,8 +58,8 @@ class GUI():
             height=1,
             width=40
         )
-        label2 = Label(
-            bottomFrame,
+        label_output = Label(
+            frame_bottom,
             text="Output",
             font=("Arial", 30),
             fg=self.color_font,
@@ -67,37 +67,37 @@ class GUI():
             height=1,
             width=40
         )
-        button1 = Button(
-            middleFrame,
+        button_start = Button(
+            frame_middle,
             text="Start",
             font=("Arial", 20),
             fg="gray10",
             bg="SpringGreen3"
         )
-        button2 = Button(
-            middleFrame,
+        button_stop = Button(
+            frame_middle,
             text="Stop",
             font=("Arial", 20),
             fg="gray10",
             bg="firebrick2"
         )
-        button3 = Button(
-            middleFrame,
+        button_select = Button(
+            frame_middle,
             text="Select Cable",
             font=("Arial", 20),
             fg="gray10",
             bg="deep sky blue"
         )
         text_box = Text(
-            bottomFrame
+            frame_bottom
         )
         
-        label1.pack(side=TOP)
-        button1.pack(side=LEFT)
-        button2.pack(side=LEFT)
-        button3.pack(side=LEFT)
+        label_title.pack(side=TOP)
+        button_start.pack(side=LEFT)
+        button_stop.pack(side=LEFT)
+        button_select.pack(side=LEFT)
         cable_type_menu.pack(side=LEFT)
-        label2.pack(side=TOP)
+        label_output.pack(side=TOP)
         text_box.pack(side=TOP)
 
 def main():
