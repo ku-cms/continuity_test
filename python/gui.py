@@ -34,6 +34,21 @@ class GUI():
         middleFrame.pack(side=TOP, fill=BOTH, expand=True)
         bottomFrame.pack(side=TOP, fill=BOTH, expand=True)
         # Widgets
+        cable_types = [
+            "Type 1",
+            "Type 2",
+            "Type 3",
+            "Type 4",
+            "Type 5"
+        ]
+        cable_type = StringVar(self.root)
+        cable_type.set(cable_types[0])
+        cable_type_menu = OptionMenu(
+            middleFrame,
+            cable_type,
+            *cable_types
+        )
+        cable_type_menu.config(font=("Arial", 20))
         label1 = Label(
             topFrame,
             text="Cable Continuity Tester",
@@ -66,6 +81,13 @@ class GUI():
             fg="gray10",
             bg="firebrick2"
         )
+        button3 = Button(
+            middleFrame,
+            text="Select Cable",
+            font=("Arial", 20),
+            fg="gray10",
+            bg="deep sky blue"
+        )
         text_box = Text(
             bottomFrame
         )
@@ -73,6 +95,8 @@ class GUI():
         label1.pack(side=TOP)
         button1.pack(side=LEFT)
         button2.pack(side=LEFT)
+        button3.pack(side=LEFT)
+        cable_type_menu.pack(side=LEFT)
         label2.pack(side=TOP)
         text_box.pack(side=TOP)
 
