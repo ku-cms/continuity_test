@@ -14,6 +14,8 @@ class GUI():
         self.color_background   = "gray45"
 
     def run(self):
+        button_padx = 10
+        button_pady = 10
         # Frames
         frame_top = Frame(
             self.root,
@@ -104,10 +106,10 @@ class GUI():
         #text_box.pack(side=TOP)
         
         label_title.grid()
-        button_start.grid(          row=0, column=0)
-        button_stop.grid(           row=0, column=1)
-        button_select.grid(         row=0, column=2)
-        self.cable_type_menu.grid(  row=0, column=3)
+        button_start.grid(          row=0, column=0, padx=button_padx, pady=button_pady)
+        button_stop.grid(           row=0, column=1, padx=button_padx, pady=button_pady)
+        button_select.grid(         row=0, column=2, padx=button_padx, pady=button_pady)
+        self.cable_type_menu.grid(  row=0, column=3, padx=button_padx, pady=button_pady)
         label_output.grid(          row=0, column=0)
         text_box.grid(              row=1, column=0)
 
