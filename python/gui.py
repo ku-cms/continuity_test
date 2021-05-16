@@ -34,21 +34,21 @@ class GUI():
         frame_middle.pack(side=TOP, fill=BOTH, expand=True)
         frame_bottom.pack(side=TOP, fill=BOTH, expand=True)
         # Widgets
-        cable_types = [
+        self.cable_types = [
             "Type 1",
             "Type 2",
             "Type 3",
             "Type 4",
             "Type 5"
         ]
-        cable_type = StringVar(self.root)
-        cable_type.set(cable_types[0])
-        cable_type_menu = OptionMenu(
+        self.cable_type = StringVar(self.root)
+        self.cable_type.set(self.cable_types[0])
+        self.cable_type_menu = OptionMenu(
             frame_middle,
-            cable_type,
-            *cable_types
+            self.cable_type,
+            *self.cable_types
         )
-        cable_type_menu.config(font=("Arial", 20))
+        self.cable_type_menu.config(font=("Arial", 20))
         label_title = Label(
             frame_top,
             text="Cable Continuity Tester",
@@ -71,6 +71,7 @@ class GUI():
             frame_middle,
             text="Start",
             font=("Arial", 20),
+            command=self.start,
             fg="gray10",
             bg="SpringGreen3"
         )
@@ -78,12 +79,14 @@ class GUI():
             frame_middle,
             text="Stop",
             font=("Arial", 20),
+            command=self.stop,
             fg="gray10",
             bg="firebrick2"
         )
         button_select = Button(
             frame_middle,
             text="Select Cable",
+            command=self.select,
             font=("Arial", 20),
             fg="gray10",
             bg="deep sky blue"
@@ -92,13 +95,30 @@ class GUI():
             frame_bottom
         )
         
-        label_title.pack(side=TOP)
-        button_start.pack(side=LEFT)
-        button_stop.pack(side=LEFT)
-        button_select.pack(side=LEFT)
-        cable_type_menu.pack(side=LEFT)
-        label_output.pack(side=TOP)
-        text_box.pack(side=TOP)
+        #label_title.pack(side=TOP)
+        #button_start.pack(side=LEFT)
+        #button_stop.pack(side=LEFT)
+        #button_select.pack(side=LEFT)
+        #self.cable_type_menu.pack(side=LEFT)
+        #label_output.pack(side=TOP)
+        #text_box.pack(side=TOP)
+        
+        label_title.grid()
+        button_start.grid(          row=0, column=0)
+        button_stop.grid(           row=0, column=1)
+        button_select.grid(         row=0, column=2)
+        self.cable_type_menu.grid(  row=0, column=3)
+        label_output.grid(          row=0, column=0)
+        text_box.grid(              row=1, column=0)
+
+    def start(self):
+        print("START")
+    
+    def stop(self):
+        print("STOP")
+    
+    def select(self):
+        print("SELECT {0}".format(self.cable_type.get()))
 
 def main():
     root = Tk()
