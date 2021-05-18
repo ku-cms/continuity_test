@@ -13,20 +13,6 @@ class GUI():
         self.color_font         = "gray95"
         self.color_background   = "gray45"
 
-    def getCableNumber(self):
-        return self.entry_cable_number.get()
-
-    def checkCableNumber(self):
-        # Require that cable number is a positive integer
-        try:
-            n = int(self.cable_number)
-            if n > 0:
-                return True
-            else:
-                return False
-        except ValueError:
-            return False
-
     def run(self):
         button_padx = 10
         button_pady = 10
@@ -155,20 +141,39 @@ class GUI():
         self.frame_bottom.grid_columnconfigure(0,    weight=1)
         self.frame_bottom.grid_columnconfigure(2,    weight=1)
 
+    def checkCableNumber(self):
+        # Require that cable number is a positive integer
+        try:
+            value = self.entry_cable_number.get()
+            n = int(value)
+            if n > 0:
+                return True
+            else:
+                return False
+        except ValueError:
+            return False
+    
+    def getCableNumber(self):
+        return int(self.entry_cable_number.get())
 
     def start(self):
-        self.cable_number   = self.getCableNumber()
-        valid_number        = self.checkCableNumber()
+        # first check if cable number is valid
+        valid_number = self.checkCableNumber()
         if valid_number:
+            self.cable_number = self.getCableNumber()
             print("START: Cable number {0}".format(self.cable_number))
+            return
         else:
             print("ERROR: Please enter a cable number (must be a positive integer).")
+            return
     
     def stop(self):
         print("STOP")
+        return
     
     def select(self):
         print("SELECT {0}".format(self.cable_type.get()))
+        return
 
 def main():
     root = Tk()
