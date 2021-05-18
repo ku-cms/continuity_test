@@ -60,6 +60,15 @@ class GUI():
             height=1,
             width=40
         )
+        label_cable_number = Label(
+            frame_middle,
+            text="Cable Number",
+            font=("Arial", 20),
+            fg=self.color_font,
+            bg=self.color_background,
+            height=1,
+            width=20
+        )
         label_output = Label(
             frame_bottom,
             text="Output",
@@ -93,25 +102,45 @@ class GUI():
             fg="gray10",
             bg="deep sky blue"
         )
+        entry_cable_number = Entry(
+            frame_middle,
+            font=("Arial", 20)
+        )
         text_box = Text(
-            frame_bottom
+            frame_bottom,
+            font=("Arial", 14),
+            height=20,
+            width=80
         )
         
-        #label_title.pack(side=TOP)
-        #button_start.pack(side=LEFT)
-        #button_stop.pack(side=LEFT)
-        #button_select.pack(side=LEFT)
-        #self.cable_type_menu.pack(side=LEFT)
-        #label_output.pack(side=TOP)
-        #text_box.pack(side=TOP)
-        
-        label_title.grid()
-        button_start.grid(          row=0, column=0, padx=button_padx, pady=button_pady)
-        button_stop.grid(           row=0, column=1, padx=button_padx, pady=button_pady)
-        button_select.grid(         row=0, column=2, padx=button_padx, pady=button_pady)
-        self.cable_type_menu.grid(  row=0, column=3, padx=button_padx, pady=button_pady)
-        label_output.grid(          row=0, column=0)
-        text_box.grid(              row=1, column=0)
+        # Frame
+        label_title.grid(           row=1, column=1)
+        # center grid using surrounding empty rows/columns as padding to fill space
+        frame_top.grid_rowconfigure(0,       weight=1)
+        frame_top.grid_rowconfigure(2,       weight=1)
+        frame_top.grid_columnconfigure(0,    weight=1)
+        frame_top.grid_columnconfigure(2,    weight=1)
+        # Frame
+        label_cable_number.grid(    row=1, column=1, padx=button_padx, pady=button_pady)
+        entry_cable_number.grid(    row=1, column=2, padx=button_padx, pady=button_pady)
+        button_start.grid(          row=2, column=1, padx=button_padx, pady=button_pady)
+        button_stop.grid(           row=2, column=2, padx=button_padx, pady=button_pady)
+        button_select.grid(         row=3, column=1, padx=button_padx, pady=button_pady)
+        self.cable_type_menu.grid(  row=3, column=2, padx=button_padx, pady=button_pady)
+        # center grid using surrounding empty rows/columns as padding to fill space
+        frame_middle.grid_rowconfigure(0,       weight=1)
+        frame_middle.grid_rowconfigure(4,       weight=1)
+        frame_middle.grid_columnconfigure(0,    weight=1)
+        frame_middle.grid_columnconfigure(3,    weight=1)
+        # Frame
+        label_output.grid(          row=1, column=1)
+        text_box.grid(              row=2, column=1, padx=20, pady=20)
+        # center grid using surrounding empty rows/columns as padding to fill space
+        frame_bottom.grid_rowconfigure(0,       weight=1)
+        frame_bottom.grid_rowconfigure(3,       weight=1)
+        frame_bottom.grid_columnconfigure(0,    weight=1)
+        frame_bottom.grid_columnconfigure(2,    weight=1)
+
 
     def start(self):
         print("START")
