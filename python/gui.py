@@ -13,6 +13,20 @@ class GUI():
         self.color_font         = "gray95"
         self.color_background   = "gray45"
 
+    def getCableNumber(self):
+        return self.entry_cable_number.get()
+
+    def checkCableNumber(self):
+        # Require that cable number is a positive integer
+        try:
+            n = int(self.cable_number)
+            if n > 0:
+                return True
+            else:
+                return False
+        except ValueError:
+            return False
+
     def run(self):
         button_padx = 10
         button_pady = 10
@@ -143,7 +157,12 @@ class GUI():
 
 
     def start(self):
-        print("START")
+        self.cable_number   = self.getCableNumber()
+        valid_number        = self.checkCableNumber()
+        if valid_number:
+            print("START: Cable number {0}".format(self.cable_number))
+        else:
+            print("ERROR: Please enter a cable number (must be a positive integer).")
     
     def stop(self):
         print("STOP")
