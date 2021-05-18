@@ -94,7 +94,7 @@ class GUI():
             font=("Arial", 20),
             command=self.clear,
             fg="gray10",
-            bg="firebrick2"
+            bg="firebrick1"
         )
         self.button_select = Button(
             self.frame_middle,
@@ -160,7 +160,7 @@ class GUI():
 
     def write(self, data):
         print(data)
-        self.text_box.insert(END, "\n" + data)
+        self.text_box.insert(END, data + "\n")
 
     def start(self):
         # first check if cable number is valid
@@ -177,6 +177,9 @@ class GUI():
     
     def clear(self):
         self.write("CLEAR")
+        # delete cable number entry
+        self.entry_cable_number.delete(0, END)
+        # delete data in text box
         self.text_box.delete("1.0", END)
         return
     
