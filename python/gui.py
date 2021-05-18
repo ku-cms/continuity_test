@@ -1,11 +1,13 @@
 # gui.py
 
 from tkinter import *
+from client import Client
 
 class GUI():
     
-    def __init__(self, root):
+    def __init__(self, root, client):
         self.root = root
+        self.client = client
         self.setColors()
         self.run()
 
@@ -86,11 +88,11 @@ class GUI():
             fg="gray10",
             bg="SpringGreen3"
         )
-        self.button_stop = Button(
+        self.button_clear = Button(
             self.frame_middle,
-            text="Stop",
+            text="Clear",
             font=("Arial", 20),
-            command=self.stop,
+            command=self.clear,
             fg="gray10",
             bg="firebrick2"
         )
@@ -124,7 +126,7 @@ class GUI():
         self.label_cable_number.grid(    row=1, column=1, padx=button_padx, pady=button_pady)
         self.entry_cable_number.grid(    row=1, column=2, padx=button_padx, pady=button_pady)
         self.button_start.grid(          row=2, column=1, padx=button_padx, pady=button_pady)
-        self.button_stop.grid(           row=2, column=2, padx=button_padx, pady=button_pady)
+        self.button_clear.grid(          row=2, column=2, padx=button_padx, pady=button_pady)
         self.button_select.grid(         row=3, column=1, padx=button_padx, pady=button_pady)
         self.cable_type_menu.grid(  row=3, column=2, padx=button_padx, pady=button_pady)
         # center grid using surrounding empty rows/columns as padding to fill space
@@ -156,28 +158,38 @@ class GUI():
     def getCableNumber(self):
         return int(self.entry_cable_number.get())
 
+    def write(self, data):
+        print(data)
+        self.text_box.insert(END, "\n" + data)
+
     def start(self):
         # first check if cable number is valid
         valid_number = self.checkCableNumber()
         if valid_number:
             self.cable_number = self.getCableNumber()
-            print("START: Cable number {0}".format(self.cable_number))
+            self.write("START: Cable number {0}".format(self.cable_number))
+            #data = self.client.read(timeout=15, nbytes=100000)
+            #self.write(data)
             return
         else:
-            print("ERROR: Please enter a cable number (must be a positive integer).")
+            self.write("ERROR: Please enter a cable number (must be a positive integer).")
             return
     
-    def stop(self):
-        print("STOP")
+    def clear(self):
+        self.write("CLEAR")
+        self.text_box.delete("1.0", END)
         return
     
     def select(self):
-        print("SELECT {0}".format(self.cable_type.get()))
+        self.write("SELECT {0}".format(self.cable_type.get()))
         return
 
 def main():
-    root = Tk()
-    app  = GUI(root)
+    port        = '/dev/ttyACM0'
+    baudrate    = 115200 
+    root        = Tk()
+    client      = Client(port, baudrate)
+    app         = GUI(root, client)
     root.mainloop()
 
 if __name__ == "__main__":
