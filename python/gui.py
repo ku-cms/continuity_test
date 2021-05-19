@@ -2,6 +2,7 @@
 
 from tkinter import *
 from client import Client
+import os
 
 class GUI():
     
@@ -89,6 +90,14 @@ class GUI():
             fg=self.color_button_fg,
             bg="gold"
         )
+        self.button_log = Button(
+            self.frame_middle,
+            text="Log",
+            font=("Arial", 20),
+            command=self.log,
+            fg=self.color_button_fg,
+            bg="maroon1"
+        )
         self.button_start = Button(
             self.frame_middle,
             text="Start",
@@ -135,6 +144,7 @@ class GUI():
         self.label_cable_number.grid(    row=1, column=1, padx=button_padx, pady=button_pady)
         self.entry_cable_number.grid(    row=1, column=2, padx=button_padx, pady=button_pady)
         self.button_read.grid(           row=2, column=1, padx=button_padx, pady=button_pady)
+        self.button_log.grid(            row=2, column=2, padx=button_padx, pady=button_pady)
         self.button_start.grid(          row=3, column=1, padx=button_padx, pady=button_pady)
         self.button_clear.grid(          row=3, column=2, padx=button_padx, pady=button_pady)
         self.button_select.grid(         row=4, column=1, padx=button_padx, pady=button_pady)
@@ -168,6 +178,20 @@ class GUI():
     def getCableNumber(self):
         return int(self.entry_cable_number.get())
 
+    def makeDir(self, dir_name):
+        # make directory if it does not exist
+        if not os.path.exists(dir_name):
+            os.mkdir(dir_name)
+
+    def getLogFileName(self, log_dir):
+        # get unique log file name by incremeting run number
+        run = 1
+        log_file = "{0}/cable{1}_run{2}.log".format(log_dir, self.cable_number, run)
+        while(os.path.exists(log_file)):
+            run += 1
+            log_file = "{0}/cable{1}_run{2}.log".format(log_dir, self.cable_number, run)
+        return log_file
+
     def write(self, data):
         print(data)
         self.text_box.insert(END, data + "\n")
@@ -177,6 +201,23 @@ class GUI():
         data = self.client.read(timeout=15, nbytes=100000)
         self.write(data)
         return
+
+    def log(self):
+        # first check if cable number is valid
+        valid_number = self.checkCableNumber()
+        if valid_number:
+            self.cable_number = self.getCableNumber()
+            self.write("LOG")
+            log_dir = "logs"
+            self.makeDir(log_dir)
+            log_file = self.getLogFileName(log_dir)
+            with open(log_file, "w") as f:
+                f.write(self.text_box.get("1.0", END))
+            return
+        else:
+            self.write("ERROR: Please enter a cable number (must be a positive integer).")
+            return
+
 
     def start(self):
         # first check if cable number is valid
