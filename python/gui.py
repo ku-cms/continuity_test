@@ -12,8 +12,9 @@ class GUI():
         self.run()
 
     def setColors(self):
-        self.color_font         = "gray95"
-        self.color_background   = "gray45"
+        self.color_label_fg  = "gray95"
+        self.color_label_bg  = "gray45"
+        self.color_button_fg = "gray10"
 
     def run(self):
         button_padx = 10
@@ -21,17 +22,17 @@ class GUI():
         # Frames
         self.frame_top = Frame(
             self.root,
-            bg=self.color_background,
+            bg=self.color_label_bg,
             height=100
         )
         self.frame_middle = Frame(
             self.root,
-            bg=self.color_background,
+            bg=self.color_label_bg,
             height=100
         )
         self.frame_bottom = Frame(
             self.root,
-            bg=self.color_background,
+            bg=self.color_label_bg,
             height=200
         )
         self.frame_top.pack(side=TOP,    fill=BOTH, expand=True)
@@ -57,8 +58,8 @@ class GUI():
             self.frame_top,
             text="Cable Continuity Tester",
             font=("Arial", 30),
-            fg=self.color_font,
-            bg=self.color_background,
+            fg=self.color_label_fg,
+            bg=self.color_label_bg,
             height=1,
             width=40
         )
@@ -66,8 +67,8 @@ class GUI():
             self.frame_middle,
             text="Cable Number",
             font=("Arial", 20),
-            fg=self.color_font,
-            bg=self.color_background,
+            fg=self.color_label_fg,
+            bg=self.color_label_bg,
             height=1,
             width=20
         )
@@ -75,17 +76,25 @@ class GUI():
             self.frame_bottom,
             text="Output",
             font=("Arial", 30),
-            fg=self.color_font,
-            bg=self.color_background,
+            fg=self.color_label_fg,
+            bg=self.color_label_bg,
             height=1,
             width=40
+        )
+        self.button_read = Button(
+            self.frame_middle,
+            text="Read",
+            font=("Arial", 20),
+            command=self.read,
+            fg=self.color_button_fg,
+            bg="gold"
         )
         self.button_start = Button(
             self.frame_middle,
             text="Start",
             font=("Arial", 20),
             command=self.start,
-            fg="gray10",
+            fg=self.color_button_fg,
             bg="SpringGreen3"
         )
         self.button_clear = Button(
@@ -93,7 +102,7 @@ class GUI():
             text="Clear",
             font=("Arial", 20),
             command=self.clear,
-            fg="gray10",
+            fg=self.color_button_fg,
             bg="firebrick1"
         )
         self.button_select = Button(
@@ -101,7 +110,7 @@ class GUI():
             text="Select Cable",
             command=self.select,
             font=("Arial", 20),
-            fg="gray10",
+            fg=self.color_button_fg,
             bg="deep sky blue"
         )
         self.entry_cable_number = Entry(
@@ -125,13 +134,14 @@ class GUI():
         # Frame
         self.label_cable_number.grid(    row=1, column=1, padx=button_padx, pady=button_pady)
         self.entry_cable_number.grid(    row=1, column=2, padx=button_padx, pady=button_pady)
-        self.button_start.grid(          row=2, column=1, padx=button_padx, pady=button_pady)
-        self.button_clear.grid(          row=2, column=2, padx=button_padx, pady=button_pady)
-        self.button_select.grid(         row=3, column=1, padx=button_padx, pady=button_pady)
-        self.cable_type_menu.grid(  row=3, column=2, padx=button_padx, pady=button_pady)
+        self.button_read.grid(           row=2, column=1, padx=button_padx, pady=button_pady)
+        self.button_start.grid(          row=3, column=1, padx=button_padx, pady=button_pady)
+        self.button_clear.grid(          row=3, column=2, padx=button_padx, pady=button_pady)
+        self.button_select.grid(         row=4, column=1, padx=button_padx, pady=button_pady)
+        self.cable_type_menu.grid(       row=4, column=2, padx=button_padx, pady=button_pady)
         # center grid using surrounding empty rows/columns as padding to fill space
         self.frame_middle.grid_rowconfigure(0,       weight=1)
-        self.frame_middle.grid_rowconfigure(4,       weight=1)
+        self.frame_middle.grid_rowconfigure(5,       weight=1)
         self.frame_middle.grid_columnconfigure(0,    weight=1)
         self.frame_middle.grid_columnconfigure(3,    weight=1)
         # Frame
@@ -162,14 +172,21 @@ class GUI():
         print(data)
         self.text_box.insert(END, data + "\n")
 
+    def read(self):
+        self.write("READ")
+        data = self.client.read(timeout=15, nbytes=100000)
+        self.write(data)
+        return
+
     def start(self):
         # first check if cable number is valid
         valid_number = self.checkCableNumber()
         if valid_number:
             self.cable_number = self.getCableNumber()
             self.write("START: Cable number {0}".format(self.cable_number))
-            #data = self.client.read(timeout=15, nbytes=100000)
-            #self.write(data)
+            x = "\n"
+            self.client.write(timeout=1, data=x)
+            self.read()
             return
         else:
             self.write("ERROR: Please enter a cable number (must be a positive integer).")
@@ -184,7 +201,11 @@ class GUI():
         return
     
     def select(self):
-        self.write("SELECT {0}".format(self.cable_type.get()))
+        cable_type = str(self.cable_type.get())
+        self.write("SELECT {0}".format(cable_type))
+        x = str(cable_type) + "\n"
+        self.client.write(timeout=1, data=x)
+        self.read()
         return
 
 def main():
