@@ -244,7 +244,9 @@ class GUI():
     def select(self):
         cable_type = str(self.cable_type.get())
         self.write("SELECT {0}".format(cable_type))
-        x = str(cable_type) + "\n"
+        # get number to send via client
+        n = cable_type.split(" ")[1]
+        x = str(n) + "\n"
         self.client.write(timeout=1, data=x)
         self.read()
         return
