@@ -3,13 +3,31 @@
 from tkinter import *
 from client import Client
 import os
+import datetime
 
 class GUI():
     
     def __init__(self, root, client):
-        self.root = root
-        self.client = client
+        self.root           = root
+        self.client         = client
+        self.cable_number   = -1
+        self.cable_type     = ""
+        self.testing_stage  = ""
+        self.testing_stages = [
+            "Stage 1",
+            "Stage 2",
+            "Stage 3"
+        ]
+        self.cable_types    = [
+            "Type 1",
+            "Type 2",
+            "Type 3",
+            "Type 4",
+            "Type 5"
+        ]
+        # set colors
         self.setColors()
+        # run GUI
         self.run()
 
     def setColors(self):
@@ -40,21 +58,27 @@ class GUI():
         self.frame_middle.pack(side=TOP, fill=BOTH, expand=True)
         self.frame_bottom.pack(side=TOP, fill=BOTH, expand=True)
         # Widgets
-        self.cable_types = [
-            "Type 1",
-            "Type 2",
-            "Type 3",
-            "Type 4",
-            "Type 5"
-        ]
-        self.cable_type = StringVar(self.root)
-        self.cable_type.set(self.cable_types[0])
+        
+        # testing stage menu
+        self.entry_testing_stage = StringVar(self.root)
+        self.entry_testing_stage.set(self.testing_stages[0])
+        self.testing_stage_menu = OptionMenu(
+            self.frame_middle,
+            self.entry_testing_stage,
+            *self.testing_stages
+        )
+        self.testing_stage_menu.config(font=("Arial", 20))
+        
+        # cable type menu
+        self.entry_cable_type = StringVar(self.root)
+        self.entry_cable_type.set(self.cable_types[0])
         self.cable_type_menu = OptionMenu(
             self.frame_middle,
-            self.cable_type,
+            self.entry_cable_type,
             *self.cable_types
         )
         self.cable_type_menu.config(font=("Arial", 20))
+        
         self.label_title = Label(
             self.frame_top,
             text="Cable Continuity Tester",
@@ -67,6 +91,15 @@ class GUI():
         self.label_cable_number = Label(
             self.frame_middle,
             text="Cable Number",
+            font=("Arial", 20),
+            fg=self.color_label_fg,
+            bg=self.color_label_bg,
+            height=1,
+            width=20
+        )
+        self.label_testing_stage = Label(
+            self.frame_middle,
+            text="Testing Stage",
             font=("Arial", 20),
             fg=self.color_label_fg,
             bg=self.color_label_bg,
@@ -143,15 +176,17 @@ class GUI():
         # Frame
         self.label_cable_number.grid(    row=1, column=1, padx=button_padx, pady=button_pady)
         self.entry_cable_number.grid(    row=1, column=2, padx=button_padx, pady=button_pady)
-        self.button_read.grid(           row=2, column=1, padx=button_padx, pady=button_pady)
-        self.button_log.grid(            row=2, column=2, padx=button_padx, pady=button_pady)
-        self.button_start.grid(          row=3, column=1, padx=button_padx, pady=button_pady)
-        self.button_clear.grid(          row=3, column=2, padx=button_padx, pady=button_pady)
-        self.button_select.grid(         row=4, column=1, padx=button_padx, pady=button_pady)
-        self.cable_type_menu.grid(       row=4, column=2, padx=button_padx, pady=button_pady)
+        self.label_testing_stage.grid(   row=2, column=1, padx=button_padx, pady=button_pady)
+        self.testing_stage_menu.grid(    row=2, column=2, padx=button_padx, pady=button_pady)
+        self.button_read.grid(           row=3, column=1, padx=button_padx, pady=button_pady)
+        self.button_log.grid(            row=3, column=2, padx=button_padx, pady=button_pady)
+        self.button_start.grid(          row=4, column=1, padx=button_padx, pady=button_pady)
+        self.button_clear.grid(          row=4, column=2, padx=button_padx, pady=button_pady)
+        self.button_select.grid(         row=5, column=1, padx=button_padx, pady=button_pady)
+        self.cable_type_menu.grid(       row=5, column=2, padx=button_padx, pady=button_pady)
         # center grid using surrounding empty rows/columns as padding to fill space
         self.frame_middle.grid_rowconfigure(0,       weight=1)
-        self.frame_middle.grid_rowconfigure(5,       weight=1)
+        self.frame_middle.grid_rowconfigure(6,       weight=1)
         self.frame_middle.grid_columnconfigure(0,    weight=1)
         self.frame_middle.grid_columnconfigure(3,    weight=1)
         # Frame
@@ -175,21 +210,48 @@ class GUI():
         except ValueError:
             return False
     
-    def getCableNumber(self):
+    def getEntryCableNumber(self):
         return int(self.entry_cable_number.get())
+    
+    def getEntryCableType(self):
+        return str(self.entry_cable_type.get())
 
+    def getEntryTestingStage(self):
+        return str(self.entry_testing_stage.get())
+
+    def getCableNumber(self):
+        return self.cable_number
+    
+    def getCableType(self):
+        return self.cable_type
+    
+    def getTestingStage(self):
+        return self.testing_stage
+    
+    def setCableNumber(self, value):
+        self.cable_number = value
+    
+    def setCableType(self, value):
+        self.cable_type = value
+    
+    def setTestingStage(self, value):
+        self.testing_stage = value
+    
     def makeDir(self, dir_name):
         # make directory if it does not exist
         if not os.path.exists(dir_name):
             os.mkdir(dir_name)
 
     def getLogFileName(self, log_dir):
-        # get unique log file name by incremeting run number
+        # log file name has cable number, testing stage, and run number
+        # get testing stage (number only)
+        stage = self.getTestingStage().split(" ")[1]
         run = 1
-        log_file = "{0}/cable{1}_run{2}.log".format(log_dir, self.cable_number, run)
+        log_file = "{0}/cable{1}_stage{2}_run{3}.log".format(log_dir, self.getCableNumber(), stage, run)
         while(os.path.exists(log_file)):
+            # get unique log file name by incremeting run number
             run += 1
-            log_file = "{0}/cable{1}_run{2}.log".format(log_dir, self.cable_number, run)
+            log_file = "{0}/cable{1}_stage{2}_run{3}.log".format(log_dir, self.getCableNumber(), stage, run)
         return log_file
 
     def write(self, data):
@@ -206,7 +268,8 @@ class GUI():
         # first check if cable number is valid
         valid_number = self.checkCableNumber()
         if valid_number:
-            self.cable_number = self.getCableNumber()
+            # set values from entries
+            self.setCableNumber(self.getEntryCableNumber())
             self.write("LOG")
             log_dir = "logs"
             self.makeDir(log_dir)
@@ -223,8 +286,16 @@ class GUI():
         # first check if cable number is valid
         valid_number = self.checkCableNumber()
         if valid_number:
-            self.cable_number = self.getCableNumber()
-            self.write("START: Cable number {0}".format(self.cable_number))
+            # set values from entries
+            self.setCableNumber(self.getEntryCableNumber())
+            self.setTestingStage(self.getEntryTestingStage())
+            time = datetime.datetime.now()
+            self.write("--------------------------------------------------------------")
+            self.write("START")
+            self.write("Date and time: {0}".format(time))
+            self.write("Cable number: {0}".format(self.getCableNumber()))
+            self.write("Testing stage: {0}".format(self.getTestingStage()))
+            self.write("--------------------------------------------------------------")
             x = "\n"
             self.client.write(timeout=1, data=x)
             self.read()
@@ -242,10 +313,11 @@ class GUI():
         return
     
     def select(self):
-        cable_type = str(self.cable_type.get())
-        self.write("SELECT {0}".format(cable_type))
-        # get number to send via client
-        n = cable_type.split(" ")[1]
+        # set values from entries
+        self.setCableType(self.getEntryCableType())
+        self.write("SELECT {0}".format(self.getCableType()))
+        # get cable type (number only) to send via client
+        n = self.getCableType().split(" ")[1]
         x = str(n) + "\n"
         self.client.write(timeout=1, data=x)
         self.read()
