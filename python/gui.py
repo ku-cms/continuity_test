@@ -296,7 +296,7 @@ class GUI():
             self.write("Cable number: {0}".format(self.getCableNumber()))
             self.write("Testing stage: {0}".format(self.getTestingStage()))
             self.write("--------------------------------------------------------------")
-            x = "\n"
+            x = "y\n"
             self.client.write(timeout=1, data=x)
             self.read()
             return
