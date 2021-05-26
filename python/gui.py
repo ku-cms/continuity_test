@@ -3,6 +3,7 @@
 from tkinter import *
 from client import Client
 import os
+import platform
 import datetime
 
 class GUI():
@@ -325,8 +326,18 @@ class GUI():
         return
 
 def main():
-    port        = 'COM3'
+    port        = ''
     baudrate    = 115200 
+
+    # Set serial port based on operating system
+    if platform.system() == 'Windows':  
+        port = 'COM3'
+    elif platform.system() == 'Linux':  
+        port = '/dev/ttyACM0'
+    else:
+        print("WARNING: serial port not set for your operating system.")
+    
+    # Run GUI
     root        = Tk()
     client      = Client(port, baudrate)
     app         = GUI(root, client)
