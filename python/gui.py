@@ -325,7 +325,7 @@ class GUI():
         return
 
 def main():
-    port        = '/dev/ttyACM0'
+    port        = 'COM3'
     baudrate    = 115200 
     root        = Tk()
     client      = Client(port, baudrate)
