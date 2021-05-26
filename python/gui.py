@@ -270,6 +270,7 @@ class GUI():
         if valid_number:
             # set values from entries
             self.setCableNumber(self.getEntryCableNumber())
+            self.setTestingStage(self.getEntryTestingStage())
             self.write("LOG")
             log_dir = "logs"
             self.makeDir(log_dir)
