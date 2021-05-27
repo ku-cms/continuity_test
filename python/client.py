@@ -9,16 +9,27 @@ class Client():
         self.baudrate   = baudrate
 
     def read(self, timeout, nbytes):
-        with serial.Serial(port=self.port, baudrate=self.baudrate, timeout=timeout) as ser:
-            x = ser.read(nbytes)
-            s = x.decode("utf-8")
-            return s
+        # read data from serial port
+        try:
+            with serial.Serial(port=self.port, baudrate=self.baudrate, timeout=timeout) as ser:
+                x = ser.read(nbytes)
+                s = x.decode("utf-8")
+                return s
+        except:
+            message = "ERROR: Cannot read from serial port. Check ZedBoard connection and power."
+            print(message)
+            return message
     
     def write(self, timeout, data):
         # string needs to be encoded
         data_encoded = data.encode("utf-8")
-        with serial.Serial(port=self.port, baudrate=self.baudrate, timeout=timeout) as ser:
-            ser.write(data_encoded)
+        # write data to serial port
+        try:
+            with serial.Serial(port=self.port, baudrate=self.baudrate, timeout=timeout) as ser:
+                ser.write(data_encoded)
+        except:
+            message = "ERROR: Cannot write to serial port. Check ZedBoard connection and power."
+            print(message)
     
     def beginTest(self, timeout, data):
         # WARNING: include one space at end of string
