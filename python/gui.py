@@ -73,10 +73,10 @@ class GUI():
             text_box_width      = 80
             label_output_frame  = self.frame_bottom
         else:
-            title_width         = 28
-            label_output_width  = 28
+            title_width         = 20
+            label_output_width  = 20
             text_box_height     = 20
-            text_box_width      = 60
+            text_box_width      = 50
             label_output_frame  = self.frame_top_right
         
         # ----------------------- #
