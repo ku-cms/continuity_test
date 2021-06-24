@@ -5,8 +5,8 @@ The ZedBoard needs to be running the continuity test firmware to perform these t
 
 The following python3 packages are required:
 ```
-tkinter
-serial
+pip install tk
+pip install pyserial
 ```
 
 Use python3 to start the GUI:

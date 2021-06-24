@@ -2,12 +2,14 @@
 
 from tkinter import *
 from client import Client
+import argparse
 import os
+import platform
 import datetime
 
 class GUI():
     
-    def __init__(self, root, client):
+    def __init__(self, root, client, vertical_layout=False):
         self.root           = root
         self.client         = client
         self.cable_number   = -1
@@ -25,6 +27,8 @@ class GUI():
             "Type 4",
             "Type 5"
         ]
+        # use vertical layout
+        self.useVerticalLayout = vertical_layout
         # set colors
         self.setColors()
         # run GUI
@@ -36,34 +40,86 @@ class GUI():
         self.color_button_fg = "gray10"
 
     def run(self):
+
+        # There are vertical and horizontal layouts supported.
+
+        # Vertical Layout
+        # frame_1
+        # frame_3
+        # frame_4
+
+        # Horizontal Layout
+        # frame_1 --- frame_2
+        # frame_3 --- frame_4
+        
+        # Frames
+        self.frame_1 = Frame(
+            self.root,
+            bg=self.color_label_bg,
+            height=100,
+            width=100
+        )
+        self.frame_2 = Frame(
+            self.root,
+            bg=self.color_label_bg,
+            height=100,
+            width=100
+        )
+        self.frame_3 = Frame(
+            self.root,
+            bg=self.color_label_bg,
+            height=200, 
+            width=100
+        )
+        self.frame_4 = Frame(
+            self.root,
+            bg=self.color_label_bg,
+            height=200,
+            width=100
+        )
+        
+        # Parameters
         button_padx = 10
         button_pady = 10
-        # Frames
-        self.frame_top = Frame(
-            self.root,
-            bg=self.color_label_bg,
-            height=100
-        )
-        self.frame_middle = Frame(
-            self.root,
-            bg=self.color_label_bg,
-            height=100
-        )
-        self.frame_bottom = Frame(
-            self.root,
-            bg=self.color_label_bg,
-            height=200
-        )
-        self.frame_top.pack(side=TOP,    fill=BOTH, expand=True)
-        self.frame_middle.pack(side=TOP, fill=BOTH, expand=True)
-        self.frame_bottom.pack(side=TOP, fill=BOTH, expand=True)
+        if self.useVerticalLayout:
+            title_width         = 40
+            label_output_width  = 40
+            text_box_height     = 20
+            text_box_width      = 80
+            label_output_frame  = self.frame_4
+        else:
+            title_width         = 20
+            label_output_width  = 20
+            text_box_height     = 20
+            text_box_width      = 50
+            label_output_frame  = self.frame_2
+        
+        # ----------------------- #
+        # --- Vertical Layout --- #
+        # ----------------------- #
+        if self.useVerticalLayout:
+            # use fill=BOTH, expand=True so that frames fill space!
+            self.frame_1.pack(side=TOP, fill=BOTH, expand=True)
+            self.frame_3.pack(side=TOP, fill=BOTH, expand=True)
+            self.frame_4.pack(side=TOP, fill=BOTH, expand=True)
+        
+        # ------------------------- #
+        # --- Horizontal Layout --- #
+        # ------------------------- #
+        else:
+            # use sticky=E + W + N + S so that frames fill space!!
+            self.frame_1.grid(row=0, column=0, sticky=E + W + N + S) 
+            self.frame_2.grid(row=0, column=1, sticky=E + W + N + S) 
+            self.frame_3.grid(row=1, column=0, sticky=E + W + N + S) 
+            self.frame_4.grid(row=1, column=1, sticky=E + W + N + S) 
+        
         # Widgets
         
         # testing stage menu
         self.entry_testing_stage = StringVar(self.root)
         self.entry_testing_stage.set(self.testing_stages[0])
         self.testing_stage_menu = OptionMenu(
-            self.frame_middle,
+            self.frame_3,
             self.entry_testing_stage,
             *self.testing_stages
         )
@@ -73,23 +129,23 @@ class GUI():
         self.entry_cable_type = StringVar(self.root)
         self.entry_cable_type.set(self.cable_types[0])
         self.cable_type_menu = OptionMenu(
-            self.frame_middle,
+            self.frame_3,
             self.entry_cable_type,
             *self.cable_types
         )
         self.cable_type_menu.config(font=("Arial", 20))
         
         self.label_title = Label(
-            self.frame_top,
+            self.frame_1,
             text="Cable Continuity Tester",
             font=("Arial", 30),
             fg=self.color_label_fg,
             bg=self.color_label_bg,
             height=1,
-            width=40
+            width=title_width
         )
         self.label_cable_number = Label(
-            self.frame_middle,
+            self.frame_3,
             text="Cable Number",
             font=("Arial", 20),
             fg=self.color_label_fg,
@@ -98,7 +154,7 @@ class GUI():
             width=20
         )
         self.label_testing_stage = Label(
-            self.frame_middle,
+            self.frame_3,
             text="Testing Stage",
             font=("Arial", 20),
             fg=self.color_label_fg,
@@ -107,16 +163,16 @@ class GUI():
             width=20
         )
         self.label_output = Label(
-            self.frame_bottom,
+            label_output_frame,
             text="Output",
             font=("Arial", 30),
             fg=self.color_label_fg,
             bg=self.color_label_bg,
             height=1,
-            width=40
+            width=label_output_width
         )
         self.button_read = Button(
-            self.frame_middle,
+            self.frame_3,
             text="Read",
             font=("Arial", 20),
             command=self.read,
@@ -124,7 +180,7 @@ class GUI():
             bg="gold"
         )
         self.button_log = Button(
-            self.frame_middle,
+            self.frame_3,
             text="Log",
             font=("Arial", 20),
             command=self.log,
@@ -132,7 +188,7 @@ class GUI():
             bg="maroon1"
         )
         self.button_start = Button(
-            self.frame_middle,
+            self.frame_3,
             text="Start",
             font=("Arial", 20),
             command=self.start,
@@ -140,7 +196,7 @@ class GUI():
             bg="SpringGreen3"
         )
         self.button_clear = Button(
-            self.frame_middle,
+            self.frame_3,
             text="Clear",
             font=("Arial", 20),
             command=self.clear,
@@ -148,7 +204,7 @@ class GUI():
             bg="firebrick1"
         )
         self.button_select = Button(
-            self.frame_middle,
+            self.frame_3,
             text="Select Cable",
             command=self.select,
             font=("Arial", 20),
@@ -156,24 +212,26 @@ class GUI():
             bg="deep sky blue"
         )
         self.entry_cable_number = Entry(
-            self.frame_middle,
+            self.frame_3,
             font=("Arial", 20)
         )
         self.text_box = Text(
-            self.frame_bottom,
+            self.frame_4,
             font=("Arial", 14),
-            height=20,
-            width=80
+            height=text_box_height,
+            width=text_box_width
         )
         
-        # Frame
+        # Frame: title
         self.label_title.grid(           row=1, column=1)
+        
         # center grid using surrounding empty rows/columns as padding to fill space
-        self.frame_top.grid_rowconfigure(0,       weight=1)
-        self.frame_top.grid_rowconfigure(2,       weight=1)
-        self.frame_top.grid_columnconfigure(0,    weight=1)
-        self.frame_top.grid_columnconfigure(2,    weight=1)
-        # Frame
+        self.frame_1.grid_rowconfigure(0,    weight=1)
+        self.frame_1.grid_rowconfigure(2,    weight=1)
+        self.frame_1.grid_columnconfigure(0, weight=1)
+        self.frame_1.grid_columnconfigure(2, weight=1)
+        
+        # Frame: user input (buttons, text, etc)
         self.label_cable_number.grid(    row=1, column=1, padx=button_padx, pady=button_pady)
         self.entry_cable_number.grid(    row=1, column=2, padx=button_padx, pady=button_pady)
         self.label_testing_stage.grid(   row=2, column=1, padx=button_padx, pady=button_pady)
@@ -184,19 +242,49 @@ class GUI():
         self.button_clear.grid(          row=4, column=2, padx=button_padx, pady=button_pady)
         self.button_select.grid(         row=5, column=1, padx=button_padx, pady=button_pady)
         self.cable_type_menu.grid(       row=5, column=2, padx=button_padx, pady=button_pady)
+        
         # center grid using surrounding empty rows/columns as padding to fill space
-        self.frame_middle.grid_rowconfigure(0,       weight=1)
-        self.frame_middle.grid_rowconfigure(6,       weight=1)
-        self.frame_middle.grid_columnconfigure(0,    weight=1)
-        self.frame_middle.grid_columnconfigure(3,    weight=1)
-        # Frame
-        self.label_output.grid(          row=1, column=1)
-        self.text_box.grid(              row=2, column=1, padx=20, pady=20)
-        # center grid using surrounding empty rows/columns as padding to fill space
-        self.frame_bottom.grid_rowconfigure(0,       weight=1)
-        self.frame_bottom.grid_rowconfigure(3,       weight=1)
-        self.frame_bottom.grid_columnconfigure(0,    weight=1)
-        self.frame_bottom.grid_columnconfigure(2,    weight=1)
+        self.frame_3.grid_rowconfigure(0,    weight=1)
+        self.frame_3.grid_rowconfigure(6,    weight=1)
+        self.frame_3.grid_columnconfigure(0, weight=1)
+        self.frame_3.grid_columnconfigure(3, weight=1)
+        
+        # ----------------------- #
+        # --- Vertical Layout --- #
+        # ----------------------- #
+        if self.useVerticalLayout:
+            # Frame: output
+            self.label_output.grid( row=1, column=1)
+            self.text_box.grid(     row=2, column=1, padx=20, pady=20)
+        
+            # center grid using surrounding empty rows/columns as padding to fill space
+            self.frame_4.grid_rowconfigure(0,    weight=1)
+            self.frame_4.grid_rowconfigure(3,    weight=1)
+            self.frame_4.grid_columnconfigure(0, weight=1)
+            self.frame_4.grid_columnconfigure(2, weight=1)
+        
+        # ------------------------- #
+        # --- Horizontal Layout --- #
+        # ------------------------- #
+        else:
+            # Frame: output label
+            self.label_output.grid(row=1, column=1)
+            
+            # center grid using surrounding empty rows/columns as padding to fill space
+            self.frame_2.grid_rowconfigure(0,    weight=1)
+            self.frame_2.grid_rowconfigure(2,    weight=1)
+            self.frame_2.grid_columnconfigure(0, weight=1)
+            self.frame_2.grid_columnconfigure(2, weight=1)
+            
+            # Frame: output text box
+            self.text_box.grid(row=1, column=1, padx=20, pady=20)
+            
+            # center grid using surrounding empty rows/columns as padding to fill space
+            self.frame_4.grid_rowconfigure(0,    weight=1)
+            self.frame_4.grid_rowconfigure(2,    weight=1)
+            self.frame_4.grid_columnconfigure(0, weight=1)
+            self.frame_4.grid_columnconfigure(2, weight=1)
+
 
     def checkCableNumber(self):
         # Require that cable number is a positive integer
@@ -275,7 +363,7 @@ class GUI():
             log_dir = "logs"
             self.makeDir(log_dir)
             log_file = self.getLogFileName(log_dir)
-            with open(log_file, "w") as f:
+            with open(log_file, "w", newline='') as f:
                 f.write(self.text_box.get("1.0", END))
             return
         else:
@@ -325,11 +413,28 @@ class GUI():
         return
 
 def main():
-    port        = '/dev/ttyACM0'
+    # options
+    parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument("--vertical_layout", "-v", default=False, action="store_true", help="use vertical layout (default is horizontal)")
+    
+    options         = parser.parse_args()
+    vertical_layout = options.vertical_layout
+
+    port        = ''
     baudrate    = 115200 
-    root        = Tk()
-    client      = Client(port, baudrate)
-    app         = GUI(root, client)
+
+    # Set serial port based on operating system
+    if platform.system() == 'Windows':  
+        port = 'COM3'
+    elif platform.system() == 'Linux':  
+        port = '/dev/ttyACM0'
+    else:
+        print("WARNING: serial port not set for your operating system.")
+    
+    # Run GUI
+    root   = Tk()
+    client = Client(port, baudrate)
+    app    = GUI(root, client, vertical_layout)
     root.mainloop()
 
 if __name__ == "__main__":

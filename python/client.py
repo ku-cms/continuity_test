@@ -10,6 +10,7 @@ class Client():
 
     def read(self, timeout, nbytes):
         # read data from serial port
+        print("read(): port = {0}, baudrate = {1}".format(self.port, self.baudrate))
         try:
             with serial.Serial(port=self.port, baudrate=self.baudrate, timeout=timeout) as ser:
                 x = ser.read(nbytes)
@@ -22,6 +23,7 @@ class Client():
     
     def write(self, timeout, data):
         # string needs to be encoded
+        print("write(): port = {0}, baudrate = {1}".format(self.port, self.baudrate))
         data_encoded = data.encode("utf-8")
         # write data to serial port
         try:
