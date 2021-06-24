@@ -45,23 +45,27 @@ class GUI():
         self.frame_top = Frame(
             self.root,
             bg=self.color_label_bg,
-            height=100
+            height=100,
+            width=100
         )
         self.frame_middle = Frame(
             self.root,
             bg=self.color_label_bg,
-            height=200
+            height=200, 
+            width=100
         )
         self.frame_bottom = Frame(
             self.root,
             bg=self.color_label_bg,
-            height=200
+            height=200,
+            width=100
         )
         # extra frame for horizontal layout
         self.frame_top_right = Frame(
             self.root,
             bg=self.color_label_bg,
-            height=100
+            height=100,
+            width=100
         )
         
         # Parameters
@@ -92,10 +96,11 @@ class GUI():
         # --- Horizontal Layout --- #
         # ------------------------- #
         else:
-            self.frame_top.grid(        row=0, column=0 ) 
-            self.frame_top_right.grid(  row=0, column=1 ) 
-            self.frame_middle.grid(     row=1, column=0 ) 
-            self.frame_bottom.grid(     row=1, column=1 ) 
+            # use sticky=E + W + N + S so that frames fill space!!
+            self.frame_top.grid(        row=0, column=0, sticky=E + W + N + S ) 
+            self.frame_top_right.grid(  row=0, column=1, sticky=E + W + N + S ) 
+            self.frame_middle.grid(     row=1, column=0, sticky=E + W + N + S ) 
+            self.frame_bottom.grid(     row=1, column=1, sticky=E + W + N + S ) 
         
         # Widgets
         
@@ -233,15 +238,42 @@ class GUI():
         self.frame_middle.grid_columnconfigure(0,    weight=1)
         self.frame_middle.grid_columnconfigure(3,    weight=1)
         
-        # Frame: output
-        self.label_output.grid(          row=1, column=1)
-        self.text_box.grid(              row=2, column=1, padx=20, pady=20)
+        # ----------------------- #
+        # --- Vertical Layout --- #
+        # ----------------------- #
+        if self.useVerticalLayout:
+            # Frame: output
+            self.label_output.grid(          row=1, column=1)
+            self.text_box.grid(              row=2, column=1, padx=20, pady=20)
         
-        # center grid using surrounding empty rows/columns as padding to fill space
-        self.frame_bottom.grid_rowconfigure(0,       weight=1)
-        self.frame_bottom.grid_rowconfigure(3,       weight=1)
-        self.frame_bottom.grid_columnconfigure(0,    weight=1)
-        self.frame_bottom.grid_columnconfigure(2,    weight=1)
+            # center grid using surrounding empty rows/columns as padding to fill space
+            self.frame_bottom.grid_rowconfigure(0,       weight=1)
+            self.frame_bottom.grid_rowconfigure(3,       weight=1)
+            self.frame_bottom.grid_columnconfigure(0,    weight=1)
+            self.frame_bottom.grid_columnconfigure(2,    weight=1)
+        
+        # ------------------------- #
+        # --- Horizontal Layout --- #
+        # ------------------------- #
+        else:
+            # Frame: output label
+            self.label_output.grid(row=1, column=1)
+            
+            # center grid using surrounding empty rows/columns as padding to fill space
+            self.frame_top_right.grid_rowconfigure(0,       weight=1)
+            self.frame_top_right.grid_rowconfigure(2,       weight=1)
+            self.frame_top_right.grid_columnconfigure(0,    weight=1)
+            self.frame_top_right.grid_columnconfigure(2,    weight=1)
+            
+            # Frame: output text box
+            self.text_box.grid(row=1, column=1, padx=20, pady=20)
+            
+            # center grid using surrounding empty rows/columns as padding to fill space
+            self.frame_bottom.grid_rowconfigure(0,       weight=1)
+            self.frame_bottom.grid_rowconfigure(2,       weight=1)
+            self.frame_bottom.grid_columnconfigure(0,    weight=1)
+            self.frame_bottom.grid_columnconfigure(2,    weight=1)
+
 
     def checkCableNumber(self):
         # Require that cable number is a positive integer
@@ -389,9 +421,9 @@ def main():
         print("WARNING: serial port not set for your operating system.")
     
     # Run GUI
-    root        = Tk()
-    client      = Client(port, baudrate)
-    app         = GUI(root, client, vertical_layout)
+    root   = Tk()
+    client = Client(port, baudrate)
+    app    = GUI(root, client, vertical_layout)
     root.mainloop()
 
 if __name__ == "__main__":
