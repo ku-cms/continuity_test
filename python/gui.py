@@ -40,28 +40,38 @@ class GUI():
         self.color_button_fg = "gray10"
 
     def run(self):
+
+        # There are vertical and horizontal layouts supported.
+
+        # Vertical Layout
+        # frame_1
+        # frame_3
+        # frame_4
+
+        # Horizontal Layout
+        # frame_1 --- frame_2
+        # frame_3 --- frame_4
         
         # Frames
-        self.frame_top_left = Frame(
+        self.frame_1 = Frame(
             self.root,
             bg=self.color_label_bg,
             height=100,
             width=100
         )
-        # top right frame used for horizontal layout only
-        self.frame_top_right = Frame(
+        self.frame_2 = Frame(
             self.root,
             bg=self.color_label_bg,
             height=100,
             width=100
         )
-        self.frame_middle = Frame(
+        self.frame_3 = Frame(
             self.root,
             bg=self.color_label_bg,
             height=200, 
             width=100
         )
-        self.frame_bottom = Frame(
+        self.frame_4 = Frame(
             self.root,
             bg=self.color_label_bg,
             height=200,
@@ -76,32 +86,32 @@ class GUI():
             label_output_width  = 40
             text_box_height     = 20
             text_box_width      = 80
-            label_output_frame  = self.frame_bottom
+            label_output_frame  = self.frame_4
         else:
             title_width         = 20
             label_output_width  = 20
             text_box_height     = 20
             text_box_width      = 50
-            label_output_frame  = self.frame_top_right
+            label_output_frame  = self.frame_2
         
         # ----------------------- #
         # --- Vertical Layout --- #
         # ----------------------- #
         if self.useVerticalLayout:
             # use fill=BOTH, expand=True so that frames fill space!
-            self.frame_top_left.pack(side=TOP,    fill=BOTH, expand=True)
-            self.frame_middle.pack(side=TOP, fill=BOTH, expand=True)
-            self.frame_bottom.pack(side=TOP, fill=BOTH, expand=True)
+            self.frame_1.pack(side=TOP, fill=BOTH, expand=True)
+            self.frame_3.pack(side=TOP, fill=BOTH, expand=True)
+            self.frame_4.pack(side=TOP, fill=BOTH, expand=True)
         
         # ------------------------- #
         # --- Horizontal Layout --- #
         # ------------------------- #
         else:
             # use sticky=E + W + N + S so that frames fill space!!
-            self.frame_top_left.grid(   row=0, column=0, sticky=E + W + N + S ) 
-            self.frame_top_right.grid(  row=0, column=1, sticky=E + W + N + S ) 
-            self.frame_middle.grid(     row=1, column=0, sticky=E + W + N + S ) 
-            self.frame_bottom.grid(     row=1, column=1, sticky=E + W + N + S ) 
+            self.frame_1.grid(row=0, column=0, sticky=E + W + N + S) 
+            self.frame_2.grid(row=0, column=1, sticky=E + W + N + S) 
+            self.frame_3.grid(row=1, column=0, sticky=E + W + N + S) 
+            self.frame_4.grid(row=1, column=1, sticky=E + W + N + S) 
         
         # Widgets
         
@@ -109,7 +119,7 @@ class GUI():
         self.entry_testing_stage = StringVar(self.root)
         self.entry_testing_stage.set(self.testing_stages[0])
         self.testing_stage_menu = OptionMenu(
-            self.frame_middle,
+            self.frame_3,
             self.entry_testing_stage,
             *self.testing_stages
         )
@@ -119,14 +129,14 @@ class GUI():
         self.entry_cable_type = StringVar(self.root)
         self.entry_cable_type.set(self.cable_types[0])
         self.cable_type_menu = OptionMenu(
-            self.frame_middle,
+            self.frame_3,
             self.entry_cable_type,
             *self.cable_types
         )
         self.cable_type_menu.config(font=("Arial", 20))
         
         self.label_title = Label(
-            self.frame_top_left,
+            self.frame_1,
             text="Cable Continuity Tester",
             font=("Arial", 30),
             fg=self.color_label_fg,
@@ -135,7 +145,7 @@ class GUI():
             width=title_width
         )
         self.label_cable_number = Label(
-            self.frame_middle,
+            self.frame_3,
             text="Cable Number",
             font=("Arial", 20),
             fg=self.color_label_fg,
@@ -144,7 +154,7 @@ class GUI():
             width=20
         )
         self.label_testing_stage = Label(
-            self.frame_middle,
+            self.frame_3,
             text="Testing Stage",
             font=("Arial", 20),
             fg=self.color_label_fg,
@@ -162,7 +172,7 @@ class GUI():
             width=label_output_width
         )
         self.button_read = Button(
-            self.frame_middle,
+            self.frame_3,
             text="Read",
             font=("Arial", 20),
             command=self.read,
@@ -170,7 +180,7 @@ class GUI():
             bg="gold"
         )
         self.button_log = Button(
-            self.frame_middle,
+            self.frame_3,
             text="Log",
             font=("Arial", 20),
             command=self.log,
@@ -178,7 +188,7 @@ class GUI():
             bg="maroon1"
         )
         self.button_start = Button(
-            self.frame_middle,
+            self.frame_3,
             text="Start",
             font=("Arial", 20),
             command=self.start,
@@ -186,7 +196,7 @@ class GUI():
             bg="SpringGreen3"
         )
         self.button_clear = Button(
-            self.frame_middle,
+            self.frame_3,
             text="Clear",
             font=("Arial", 20),
             command=self.clear,
@@ -194,7 +204,7 @@ class GUI():
             bg="firebrick1"
         )
         self.button_select = Button(
-            self.frame_middle,
+            self.frame_3,
             text="Select Cable",
             command=self.select,
             font=("Arial", 20),
@@ -202,11 +212,11 @@ class GUI():
             bg="deep sky blue"
         )
         self.entry_cable_number = Entry(
-            self.frame_middle,
+            self.frame_3,
             font=("Arial", 20)
         )
         self.text_box = Text(
-            self.frame_bottom,
+            self.frame_4,
             font=("Arial", 14),
             height=text_box_height,
             width=text_box_width
@@ -216,10 +226,10 @@ class GUI():
         self.label_title.grid(           row=1, column=1)
         
         # center grid using surrounding empty rows/columns as padding to fill space
-        self.frame_top_left.grid_rowconfigure(0,       weight=1)
-        self.frame_top_left.grid_rowconfigure(2,       weight=1)
-        self.frame_top_left.grid_columnconfigure(0,    weight=1)
-        self.frame_top_left.grid_columnconfigure(2,    weight=1)
+        self.frame_1.grid_rowconfigure(0,    weight=1)
+        self.frame_1.grid_rowconfigure(2,    weight=1)
+        self.frame_1.grid_columnconfigure(0, weight=1)
+        self.frame_1.grid_columnconfigure(2, weight=1)
         
         # Frame: user input (buttons, text, etc)
         self.label_cable_number.grid(    row=1, column=1, padx=button_padx, pady=button_pady)
@@ -234,24 +244,24 @@ class GUI():
         self.cable_type_menu.grid(       row=5, column=2, padx=button_padx, pady=button_pady)
         
         # center grid using surrounding empty rows/columns as padding to fill space
-        self.frame_middle.grid_rowconfigure(0,       weight=1)
-        self.frame_middle.grid_rowconfigure(6,       weight=1)
-        self.frame_middle.grid_columnconfigure(0,    weight=1)
-        self.frame_middle.grid_columnconfigure(3,    weight=1)
+        self.frame_3.grid_rowconfigure(0,    weight=1)
+        self.frame_3.grid_rowconfigure(6,    weight=1)
+        self.frame_3.grid_columnconfigure(0, weight=1)
+        self.frame_3.grid_columnconfigure(3, weight=1)
         
         # ----------------------- #
         # --- Vertical Layout --- #
         # ----------------------- #
         if self.useVerticalLayout:
             # Frame: output
-            self.label_output.grid(          row=1, column=1)
-            self.text_box.grid(              row=2, column=1, padx=20, pady=20)
+            self.label_output.grid( row=1, column=1)
+            self.text_box.grid(     row=2, column=1, padx=20, pady=20)
         
             # center grid using surrounding empty rows/columns as padding to fill space
-            self.frame_bottom.grid_rowconfigure(0,       weight=1)
-            self.frame_bottom.grid_rowconfigure(3,       weight=1)
-            self.frame_bottom.grid_columnconfigure(0,    weight=1)
-            self.frame_bottom.grid_columnconfigure(2,    weight=1)
+            self.frame_4.grid_rowconfigure(0,    weight=1)
+            self.frame_4.grid_rowconfigure(3,    weight=1)
+            self.frame_4.grid_columnconfigure(0, weight=1)
+            self.frame_4.grid_columnconfigure(2, weight=1)
         
         # ------------------------- #
         # --- Horizontal Layout --- #
@@ -261,19 +271,19 @@ class GUI():
             self.label_output.grid(row=1, column=1)
             
             # center grid using surrounding empty rows/columns as padding to fill space
-            self.frame_top_right.grid_rowconfigure(0,       weight=1)
-            self.frame_top_right.grid_rowconfigure(2,       weight=1)
-            self.frame_top_right.grid_columnconfigure(0,    weight=1)
-            self.frame_top_right.grid_columnconfigure(2,    weight=1)
+            self.frame_2.grid_rowconfigure(0,    weight=1)
+            self.frame_2.grid_rowconfigure(2,    weight=1)
+            self.frame_2.grid_columnconfigure(0, weight=1)
+            self.frame_2.grid_columnconfigure(2, weight=1)
             
             # Frame: output text box
             self.text_box.grid(row=1, column=1, padx=20, pady=20)
             
             # center grid using surrounding empty rows/columns as padding to fill space
-            self.frame_bottom.grid_rowconfigure(0,       weight=1)
-            self.frame_bottom.grid_rowconfigure(2,       weight=1)
-            self.frame_bottom.grid_columnconfigure(0,    weight=1)
-            self.frame_bottom.grid_columnconfigure(2,    weight=1)
+            self.frame_4.grid_rowconfigure(0,    weight=1)
+            self.frame_4.grid_rowconfigure(2,    weight=1)
+            self.frame_4.grid_columnconfigure(0, weight=1)
+            self.frame_4.grid_columnconfigure(2, weight=1)
 
 
     def checkCableNumber(self):
