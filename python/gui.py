@@ -27,7 +27,7 @@ class GUI():
             "Type 5"
         ]
         # use vertical layout
-        self.useVerticalLayout = False
+        self.useVerticalLayout = True
         # set colors
         self.setColors()
         # run GUI
@@ -319,7 +319,7 @@ class GUI():
             log_dir = "logs"
             self.makeDir(log_dir)
             log_file = self.getLogFileName(log_dir)
-            with open(log_file, "w") as f:
+            with open(log_file, "w", newline='') as f:
                 f.write(self.text_box.get("1.0", END))
             return
         else:
