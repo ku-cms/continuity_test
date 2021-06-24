@@ -42,7 +42,14 @@ class GUI():
     def run(self):
         
         # Frames
-        self.frame_top = Frame(
+        self.frame_top_left = Frame(
+            self.root,
+            bg=self.color_label_bg,
+            height=100,
+            width=100
+        )
+        # top right frame used for horizontal layout only
+        self.frame_top_right = Frame(
             self.root,
             bg=self.color_label_bg,
             height=100,
@@ -58,13 +65,6 @@ class GUI():
             self.root,
             bg=self.color_label_bg,
             height=200,
-            width=100
-        )
-        # extra frame for horizontal layout
-        self.frame_top_right = Frame(
-            self.root,
-            bg=self.color_label_bg,
-            height=100,
             width=100
         )
         
@@ -88,7 +88,8 @@ class GUI():
         # --- Vertical Layout --- #
         # ----------------------- #
         if self.useVerticalLayout:
-            self.frame_top.pack(side=TOP,    fill=BOTH, expand=True)
+            # use fill=BOTH, expand=True so that frames fill space!
+            self.frame_top_left.pack(side=TOP,    fill=BOTH, expand=True)
             self.frame_middle.pack(side=TOP, fill=BOTH, expand=True)
             self.frame_bottom.pack(side=TOP, fill=BOTH, expand=True)
         
@@ -97,7 +98,7 @@ class GUI():
         # ------------------------- #
         else:
             # use sticky=E + W + N + S so that frames fill space!!
-            self.frame_top.grid(        row=0, column=0, sticky=E + W + N + S ) 
+            self.frame_top_left.grid(   row=0, column=0, sticky=E + W + N + S ) 
             self.frame_top_right.grid(  row=0, column=1, sticky=E + W + N + S ) 
             self.frame_middle.grid(     row=1, column=0, sticky=E + W + N + S ) 
             self.frame_bottom.grid(     row=1, column=1, sticky=E + W + N + S ) 
@@ -125,7 +126,7 @@ class GUI():
         self.cable_type_menu.config(font=("Arial", 20))
         
         self.label_title = Label(
-            self.frame_top,
+            self.frame_top_left,
             text="Cable Continuity Tester",
             font=("Arial", 30),
             fg=self.color_label_fg,
@@ -215,10 +216,10 @@ class GUI():
         self.label_title.grid(           row=1, column=1)
         
         # center grid using surrounding empty rows/columns as padding to fill space
-        self.frame_top.grid_rowconfigure(0,       weight=1)
-        self.frame_top.grid_rowconfigure(2,       weight=1)
-        self.frame_top.grid_columnconfigure(0,    weight=1)
-        self.frame_top.grid_columnconfigure(2,    weight=1)
+        self.frame_top_left.grid_rowconfigure(0,       weight=1)
+        self.frame_top_left.grid_rowconfigure(2,       weight=1)
+        self.frame_top_left.grid_columnconfigure(0,    weight=1)
+        self.frame_top_left.grid_columnconfigure(2,    weight=1)
         
         # Frame: user input (buttons, text, etc)
         self.label_cable_number.grid(    row=1, column=1, padx=button_padx, pady=button_pady)
