@@ -2,13 +2,14 @@
 
 from tkinter import *
 from client import Client
+import argparse
 import os
 import platform
 import datetime
 
 class GUI():
     
-    def __init__(self, root, client):
+    def __init__(self, root, client, vertical_layout=False):
         self.root           = root
         self.client         = client
         self.cable_number   = -1
@@ -27,7 +28,7 @@ class GUI():
             "Type 5"
         ]
         # use vertical layout
-        self.useVerticalLayout = True
+        self.useVerticalLayout = vertical_layout
         # set colors
         self.setColors()
         # run GUI
@@ -369,6 +370,13 @@ class GUI():
         return
 
 def main():
+    # options
+    parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument("--vertical_layout", "-v", default=False, action="store_true", help="use vertical layout (default is horizontal)")
+    
+    options         = parser.parse_args()
+    vertical_layout = options.vertical_layout
+
     port        = ''
     baudrate    = 115200 
 
@@ -383,7 +391,7 @@ def main():
     # Run GUI
     root        = Tk()
     client      = Client(port, baudrate)
-    app         = GUI(root, client)
+    app         = GUI(root, client, vertical_layout)
     root.mainloop()
 
 if __name__ == "__main__":
