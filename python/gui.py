@@ -21,6 +21,7 @@ class GUI():
             "Stage 3"
         ]
         self.cable_types    = [
+            "Type 0",
             "Type 1",
             "Type 2",
             "Type 3",
