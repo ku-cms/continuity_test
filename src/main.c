@@ -12,10 +12,13 @@ int* wire_map = WIRES_33_TO_45;
 
 u32 gpio_read(u32 channel);
 void gpio_write(u32 channel, u32 data);
+void getStartChar();
+void test();
+void run();
+int freqTest(char s[]);
 void sweep(int Hz, int r[]);
 int printError(int r, int channel, char s[]);
 const char* getWire(int channel);
-int freqTest(char s[]);
 
 int main()
 {
@@ -26,116 +29,15 @@ int main()
 	// Main Loop: begin
 	while (1) {
 		// Ask user to initialize program.
-		printf("Press enter to begin continuity test: ");
-		getchar();
-		sleep(1);
-		printf("Starting test\n");
+		// Note: use 'y' as flag to run
+		// There were issues in clearing characters and only using enter
+		// Do not enter characters after 'y' due to cable type bug
+		getStartChar();
 
-		// Setup
-		// srand((unsigned) 69);
-		// XGpio_Initialize(&gpio, XPAR_GPIO_0_DEVICE_ID);
-		// init_platform();
-
-		u32 read_mask = 0xFF << 6;
-		XGpio_SetDataDirection(&gpio, 2, read_mask);
-		u8 result = (u8)(XGpio_DiscreteRead(&gpio, 2) >> 6);
-
-		if (result == 0b00000100) {
-			printf("33-45 pin connectors detected!\n");
-
-			map = MAPPING_33_TO_45;
-			wire_map = WIRES_33_TO_45;
-
-			char reports[280];
-			int f = freqTest(reports);
-			printf("%d faults found\n%s", f, reports);
-
-		} else if (result == 0b10000100) {
-			printf("17-45 pin connectors detected!\n");
-			char reports[4][280];
-			int b_min = 1;
-			char mod[80] = "Module 1";
-
-			printf("Testing Module 1: ");
-			map = MAPPING_17_TO_45_M1;
-			wire_map = WIRES_17_TO_45_M1;
-			int f_min = freqTest(reports[0]);
-			printf("%d faults found\n", f_min);
-
-			printf("Testing Module 2 (Type 3): ");
-			map = MAPPING_17_TO_45_M2_T3;
-			wire_map = WIRES_17_TO_45_M2_T3;
-			int f2 = freqTest(reports[1]);
-			printf("%d faults found\n", f2);
-			if (f2 < f_min) {f_min = f2; b_min = 2; strcpy(mod, "Module 2 (Type 3)");}
-
-			printf("Testing Module 2 (Type 4): ");
-			map = MAPPING_17_TO_45_M2_T4;
-			wire_map = WIRES_17_TO_45_M2_T4;
-			int f3 = freqTest(reports[2]);
-			printf("%d faults found\n", f3);
-			if (f3 < f_min) {f_min = f3; b_min = 3; strcpy(mod, "Module 2 (Type 4)");}
-
-			printf("Testing Module 3: ");
-			map = MAPPING_17_TO_45_M3;
-			wire_map = WIRES_17_TO_45_M3;
-			int f4 = freqTest(reports[3]);
-			printf("%d faults found\n", f4);
-			if (f4 < f_min) {f_min = f3; b_min = 4; strcpy(mod, "Module 3");
-		}
-
-			printf("You are probably testing %s. Full report below.\n%s", mod, reports[b_min-1]);
-			// printf("Report 2:\n%s", reports[1]);
-			// printf("Report 3:\n%s", reports[2]);
-		} else {
-			printf("Error: unknown connector configuration.\n");
-
-			 // User indicates type of cable to test
-			int cableType = 0;
-			while (cableType < 1 || cableType > TYPES_OF_CABLES) {
-				printf("Types of Cables: \n");
-				printf("(1) E-link Type 1: (33pin - 45pin)\n");
-				printf("(2) E-link Module 1: (17pin - 45pin)\n");
-				printf("(3) E-link Module 2 (Type 3): (17pin - 45pin)\n");
-				printf("(4) E-link Module 2 (Type 4): (17pin - 45pin)\n");
-				printf("(5) E-link Module 3: (17pin - 45pin)\n");
-				printf("================\n");
-				printf("Select which kind of cable is being tested (1-%d): ", TYPES_OF_CABLES);
-				scanf("%d", &cableType);
-				sleep(1);
-				printf("You have selected (%d)\n", cableType);
-			}
-
-			switch (cableType) {
-				case 1:
-					map = MAPPING_33_TO_45;
-					wire_map = WIRES_33_TO_45;
-					break;
-				case 2:
-					map = MAPPING_17_TO_45_M1;
-					wire_map = WIRES_17_TO_45_M1;
-					break;
-				case 3:
-					map = MAPPING_17_TO_45_M2_T3;
-					wire_map = WIRES_17_TO_45_M2_T3;
-					break;
-				case 4:
-					map = MAPPING_17_TO_45_M2_T4;
-					wire_map = WIRES_17_TO_45_M2_T4;
-					break;
-				case 5:
-					map = MAPPING_17_TO_45_M3;
-					wire_map = WIRES_17_TO_45_M3;
-					break;
-				default:
-					printf("Error: invalid cable type.\n");
-					return 1;
-			}
-
-			char reports[280];
-			int f = freqTest(reports);
-			printf("%d faults found\n%s", f, reports);
-		}
+		sleep(1); // sleep to give GUI time to read beginning of test
+		printf("\nStarting continuity test\n");
+		//test();
+		run();
 	}
 	// Main Loop: end
 
@@ -157,6 +59,133 @@ void gpio_write(u32 channel, u32 data) {
 	XGpio_DiscreteWrite(&gpio, 1, (0 | (data << channel)));
 }
 
+// get character from user to begin
+void getStartChar() {
+	char c;
+	printf("Enter 'y' to begin continuity test: ");
+	c = getchar();
+	//printf("\nCharacter entered: ");
+	//putchar(c);
+	while (c != 'y') {
+		c = getchar();
+		//printf("\nCharacter entered: ");
+		//putchar(c);
+	}
+}
+
+void test() {
+	printf("Begin test\n");
+}
+
+void run() {
+	// Setup
+	// srand((unsigned) 69);int freqTest(char s[]);
+	// XGpio_Initialize(&gpio, XPAR_GPIO_0_DEVICE_ID);
+	// init_platform();
+
+	u32 read_mask = 0xFF << 6;
+	XGpio_SetDataDirection(&gpio, 2, read_mask);
+	u8 result = (u8)(XGpio_DiscreteRead(&gpio, 2) >> 6);
+
+	if (result == 0b00000100) {
+		printf("33-45 pin connectors detected!\n");
+
+		map = MAPPING_33_TO_45;
+		wire_map = WIRES_33_TO_45;
+
+		char reports[280];
+		int f = freqTest(reports);
+		printf("%d faults found\n%s", f, reports);
+
+	} else if (result == 0b10000100) {
+		printf("17-45 pin connectors detected!\n");
+		char reports[4][280];
+		int b_min = 1;
+		char mod[80] = "Module 1";
+
+		printf("Testing Module 1: ");
+		map = MAPPING_17_TO_45_M1;
+		wire_map = WIRES_17_TO_45_M1;
+		int f_min = freqTest(reports[0]);
+		printf("%d faults found\n", f_min);
+
+		printf("Testing Module 2 (Type 3): ");
+		map = MAPPING_17_TO_45_M2_T3;
+		wire_map = WIRES_17_TO_45_M2_T3;
+		int f2 = freqTest(reports[1]);
+		printf("%d faults found\n", f2);
+		if (f2 < f_min) {f_min = f2; b_min = 2; strcpy(mod, "Module 2 (Type 3)");}
+
+		printf("Testing Module 2 (Type 4): ");
+		map = MAPPING_17_TO_45_M2_T4;
+		wire_map = WIRES_17_TO_45_M2_T4;
+		int f3 = freqTest(reports[2]);
+		printf("%d faults found\n", f3);
+		if (f3 < f_min) {f_min = f3; b_min = 3; strcpy(mod, "Module 2 (Type 4)");}
+
+		printf("Testing Module 3: ");
+		map = MAPPING_17_TO_45_M3;
+		wire_map = WIRES_17_TO_45_M3;
+		int f4 = freqTest(reports[3]);
+		printf("%d faults found\n", f4);
+		if (f4 < f_min) {f_min = f3; b_min = 4; strcpy(mod, "Module 3");
+	}
+
+		printf("You are probably testing %s. Full report below.\n%s", mod, reports[b_min-1]);
+		// printf("Report 2:\n%s", reports[1]);
+		// printf("Report 3:\n%s", reports[2]);
+	} else {
+		printf("Error: unknown connector configuration.\n");
+
+		// User indicates type of cable to test
+		// WARNING: there is a bug of an infinite loop if non integer is entered, e.g. 'a'
+		int cableType = 0;
+		while (cableType < 1 || cableType > TYPES_OF_CABLES) {
+			printf("Types of Cables: \n");
+			printf("(1) E-link Type 1: (33pin - 45pin)\n");
+			printf("(2) E-link Module 1: (17pin - 45pin)\n");
+			printf("(3) E-link Module 2 (Type 3): (17pin - 45pin)\n");
+			printf("(4) E-link Module 2 (Type 4): (17pin - 45pin)\n");
+			printf("(5) E-link Module 3: (17pin - 45pin)\n");
+			printf("================\n");
+			printf("Select which kind of cable is being tested (1-%d): ", TYPES_OF_CABLES);
+			scanf("%d", &cableType);
+			sleep(1);
+			printf("You have selected (%d)\n", cableType);
+		}
+
+		switch (cableType) {
+			case 1:
+				map = MAPPING_33_TO_45;
+				wire_map = WIRES_33_TO_45;
+				break;
+			case 2:
+				map = MAPPING_17_TO_45_M1;
+				wire_map = WIRES_17_TO_45_M1;
+				break;
+			case 3:
+				map = MAPPING_17_TO_45_M2_T3;
+				wire_map = WIRES_17_TO_45_M2_T3;
+				break;
+			case 4:
+				map = MAPPING_17_TO_45_M2_T4;
+				wire_map = WIRES_17_TO_45_M2_T4;
+				break;
+			case 5:
+				map = MAPPING_17_TO_45_M3;
+				wire_map = WIRES_17_TO_45_M3;
+				break;
+			default:
+				printf("Error: invalid cable type.\n");
+				return 1;
+		}
+
+		char reports[280];
+		int f = freqTest(reports);
+		printf("%d faults found\n%s", f, reports);
+	}
+}
+
 int freqTest(char s[]) {
 	sprintf(s, "================\n");
 
@@ -165,7 +194,7 @@ int freqTest(char s[]) {
 	for(int i = 0; i < freqsLength; i++) {
 		results[i] = (int *)malloc(sizeof(int)*64);
 	}
-
+	int freqTest(char s[]);
 	for (int i = 0; i < freqsLength; i++) {
 		printf("Sweep at %d Hz\n", freqs[i]);
 		sweep(freqs[i], results[i]);
