@@ -86,8 +86,8 @@ void run() {
 	u32 read_mask = 0xFF << 6;
 	XGpio_SetDataDirection(&gpio, 2, read_mask);
 	u8 result = (u8)(XGpio_DiscreteRead(&gpio, 2) >> 6);
-
-	if (result == 0b00000100) {
+	if (0){
+//if (result == 0b00000100) {
 		printf("33-45 pin connectors detected!\n");
 
 		map = MAPPING_33_TO_45;
@@ -97,7 +97,8 @@ void run() {
 		int f = freqTest(reports);
 		printf("%d faults found\n%s", f, reports);
 
-	} else if (result == 0b10000100) {
+	} else if (0) {
+	//} else if (result == 0b10000100) {
 		printf("17-45 pin connectors detected!\n");
 		char reports[4][280];
 		int b_min = 1;
@@ -139,22 +140,27 @@ void run() {
 
 		// User indicates type of cable to test
 		// WARNING: there is a bug of an infinite loop if non integer is entered, e.g. 'a'
-		int cableType = 0;
-		while (cableType < 1 || cableType > TYPES_OF_CABLES) {
+		int cableType = -1;
+		while (cableType < 0 || cableType > TYPES_OF_CABLES) {
 			printf("Types of Cables: \n");
+			printf("(0) E-link Type 0: (33pin - 33pin)\n");
 			printf("(1) E-link Type 1: (33pin - 45pin)\n");
 			printf("(2) E-link Module 1: (17pin - 45pin)\n");
 			printf("(3) E-link Module 2 (Type 3): (17pin - 45pin)\n");
 			printf("(4) E-link Module 2 (Type 4): (17pin - 45pin)\n");
 			printf("(5) E-link Module 3: (17pin - 45pin)\n");
 			printf("================\n");
-			printf("Select which kind of cable is being tested (1-%d): ", TYPES_OF_CABLES);
+			printf("Select which kind of cable is being tested (0-%d): ", TYPES_OF_CABLES);
 			scanf("%d", &cableType);
 			sleep(1);
 			printf("You have selected (%d)\n", cableType);
 		}
 
 		switch (cableType) {
+			case 0:
+				map = MAPPING_33_TO_33;
+				wire_map = WIRES_33_TO_33;
+				break;
 			case 1:
 				map = MAPPING_33_TO_45;
 				wire_map = WIRES_33_TO_45;
@@ -179,7 +185,7 @@ void run() {
 				printf("Error: invalid cable type.\n");
 				return 1;
 		}
-
+		printf("Analyzed Type (%d)\n", cableType);
 		char reports[280];
 		int f = freqTest(reports);
 		printf("%d faults found\n%s", f, reports);
@@ -211,7 +217,9 @@ int freqTest(char s[]) {
 		}
 
 		char tmp[140];
-		if (diff != 0) {
+		//printf("diff equals %d\n",diff);
+//		if (diff != 0) {
+		if (0) {
 			sprintf(tmp, "Capacitive Coupling detected at wire %s!\n", getWire(i));
 			strcat(s, tmp);
 
@@ -248,7 +256,7 @@ void sweep(int Hz, int r[]) {
 		if (map[channel] < channel) {
 			continue;
 		}
-		// printf("testing channel %d-%d\n", channel, map[channel]);
+		//printf("testing channel %d-%d\n", channel, map[channel]);
 
 		u32 errors_low = 0; u32 errors_high = 0; // Bits are 1 where there are errors
 		u32 output_low = 0; u32 output_high = 0; // Determines if error is short or open circuit
@@ -262,7 +270,7 @@ void sweep(int Hz, int r[]) {
 			XGpio_DiscreteWrite(&gpio, 1, data << channel);
 			XGpio_DiscreteWrite(&gpio, 2, data << (channel-32));
 
-//			printf("Wrote low (%d) high (%d)\n", (int)(data << channel), (int)(data << (channel-32)));
+			//printf("Wrote low (%d) high (%d)\n", (int)(data << channel), (int)(data << (channel-32)));
 
 			// Create read mask
 			u32 mask_lower = 0x0; u32 mask_upper = 0x0;// Default: don't read anything
@@ -279,7 +287,7 @@ void sweep(int Hz, int r[]) {
 				mask_upper &= ~(1 << (channel-32)); // Don't read from bit we wrote to.
 			}
 
-//			printf("Mask-l: %d, Mask-h: %d\n", (int)mask_lower, (int)mask_upper);
+			//printf("Mask-l: %d, Mask-h: %d\n", (int)mask_lower, (int)mask_upper);
 
 			if (Hz > 0) {
 				usleep(1000000 * (1.0/Hz)); // Delay according to frequency
@@ -300,12 +308,12 @@ void sweep(int Hz, int r[]) {
 			errors_high |= (result_high ^ expected_high);
 			output_high |= result_high & (result_high ^ expected_high);
 
-			// printf("Low: Expected %d, Got %d; map[c] = %d\n", (int)expected_low, (int)result_low, (int)map[channel]);
-			// printf("High: Expected %d, Got %d; map[c] = %d\n", (int)expected_high, (int)result_high, (int)map[channel]);
+			//printf("Low: Expected %d, Got %d; map[c] = %d\n", (int)expected_low, (int)result_low, (int)map[channel]);
+			//printf("High: Expected %d, Got %d; map[c] = %d\n", (int)expected_high, (int)result_high, (int)map[channel]);
 		}
 
-		// printf("c: %d, Errors: %d\n", channel, (int)(errors_low));
-		// printf("c: %d, Output: %d\n", channel, (int)(output_low));
+			//printf("c: %d, Errors: %d\n", channel, (int)(errors_low));
+			//printf("c: %d, Output: %d\n", channel, (int)(output_low));
 
 		// Writes errors if they exist
 		if (errors_low != 0 || errors_high != 0) {
