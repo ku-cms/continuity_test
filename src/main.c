@@ -85,9 +85,10 @@ void run() {
 
 	u32 read_mask = 0xFF << 6;
 	XGpio_SetDataDirection(&gpio, 2, read_mask);
-	u8 result = (u8)(XGpio_DiscreteRead(&gpio, 2) >> 6);
-	if (0){
-//if (result == 0b00000100) {
+	//u8 result = (u8)(XGpio_DiscreteRead(&gpio, 2) >> 6);
+
+	//if (result == 0b00000100) {
+	if (0) {
 		printf("33-45 pin connectors detected!\n");
 
 		map = MAPPING_33_TO_45;
@@ -128,7 +129,7 @@ void run() {
 		map = MAPPING_17_TO_45_M3;
 		wire_map = WIRES_17_TO_45_M3;
 		int f4 = freqTest(reports[3]);
-		printf("%d faults found\n", f4);
+		printf("%d faultsfflush(stdout); found\n", f4);
 		if (f4 < f_min) {f_min = f3; b_min = 4; strcpy(mod, "Module 3");
 	}
 
@@ -140,27 +141,22 @@ void run() {
 
 		// User indicates type of cable to test
 		// WARNING: there is a bug of an infinite loop if non integer is entered, e.g. 'a'
-		int cableType = -1;
-		while (cableType < 0 || cableType > TYPES_OF_CABLES) {
+		int cableType = 0;
+		while (cableType < 1 || cableType > TYPES_OF_CABLES) {
 			printf("Types of Cables: \n");
-			printf("(0) E-link Type 0: (33pin - 33pin)\n");
 			printf("(1) E-link Type 1: (33pin - 45pin)\n");
 			printf("(2) E-link Module 1: (17pin - 45pin)\n");
 			printf("(3) E-link Module 2 (Type 3): (17pin - 45pin)\n");
 			printf("(4) E-link Module 2 (Type 4): (17pin - 45pin)\n");
 			printf("(5) E-link Module 3: (17pin - 45pin)\n");
 			printf("================\n");
-			printf("Select which kind of cable is being tested (0-%d): ", TYPES_OF_CABLES);
+			printf("Select which kind of cable is being tested (1-%d): ", TYPES_OF_CABLES);
 			scanf("%d", &cableType);
 			sleep(1);
 			printf("You have selected (%d)\n", cableType);
 		}
 
 		switch (cableType) {
-			case 0:
-				map = MAPPING_33_TO_33;
-				wire_map = WIRES_33_TO_33;
-				break;
 			case 1:
 				map = MAPPING_33_TO_45;
 				wire_map = WIRES_33_TO_45;
@@ -183,9 +179,9 @@ void run() {
 				break;
 			default:
 				printf("Error: invalid cable type.\n");
-				return 1;
+				return;
 		}
-		printf("Analyzed Type (%d)\n", cableType);
+
 		char reports[280];
 		int f = freqTest(reports);
 		printf("%d faults found\n%s", f, reports);
@@ -200,10 +196,11 @@ int freqTest(char s[]) {
 	for(int i = 0; i < freqsLength; i++) {
 		results[i] = (int *)malloc(sizeof(int)*64);
 	}
-	int freqTest(char s[]);
+
 	for (int i = 0; i < freqsLength; i++) {
-		printf("Sweep at %d Hz\n", freqs[i]);
+		printf("Starting sweep at %d Hz\n", freqs[i]);
 		sweep(freqs[i], results[i]);
+		printf("Finished sweep at %d Hz\n", freqs[i]);
 	}
 
 	// Print results
@@ -217,9 +214,7 @@ int freqTest(char s[]) {
 		}
 
 		char tmp[140];
-		//printf("diff equals %d\n",diff);
-//		if (diff != 0) {
-		if (0) {
+		if (diff != 0) {
 			sprintf(tmp, "Capacitive Coupling detected at wire %s!\n", getWire(i));
 			strcat(s, tmp);
 
@@ -237,15 +232,18 @@ int freqTest(char s[]) {
 			faults += printError(results[0][i], i, s);
 
 			// Clear results
-			for (int j = 0; j < 3; j++) {
+			//printf("Before clearing results\n");
+			for (int j = 0; j < freqsLength; j++) {
 				results[j][i] = 0;
 			}
+			//printf("After clearing results\n");
 		}
 
 	}
 	if (faults == 0) {
 		sprintf(s, "================\nCable is fault-free!\n");
 	}
+	printf("End of freqTest(): Faults = %d\n", faults);
 	return faults;
 }
 
@@ -256,7 +254,7 @@ void sweep(int Hz, int r[]) {
 		if (map[channel] < channel) {
 			continue;
 		}
-		//printf("testing channel %d-%d\n", channel, map[channel]);
+		printf("testing channel %d-%d\n", channel, map[channel]);
 
 		u32 errors_low = 0; u32 errors_high = 0; // Bits are 1 where there are errors
 		u32 output_low = 0; u32 output_high = 0; // Determines if error is short or open circuit
@@ -270,7 +268,7 @@ void sweep(int Hz, int r[]) {
 			XGpio_DiscreteWrite(&gpio, 1, data << channel);
 			XGpio_DiscreteWrite(&gpio, 2, data << (channel-32));
 
-			//printf("Wrote low (%d) high (%d)\n", (int)(data << channel), (int)(data << (channel-32)));
+//			printf("Wrote low (%d) high (%d)\n", (int)(data << channel), (int)(data << (channel-32)));
 
 			// Create read mask
 			u32 mask_lower = 0x0; u32 mask_upper = 0x0;// Default: don't read anything
@@ -287,7 +285,7 @@ void sweep(int Hz, int r[]) {
 				mask_upper &= ~(1 << (channel-32)); // Don't read from bit we wrote to.
 			}
 
-			//printf("Mask-l: %d, Mask-h: %d\n", (int)mask_lower, (int)mask_upper);
+//			printf("Mask-l: %d, Mask-h: %d\n", (int)mask_lower, (int)mask_upper);
 
 			if (Hz > 0) {
 				usleep(1000000 * (1.0/Hz)); // Delay according to frequency
@@ -308,12 +306,14 @@ void sweep(int Hz, int r[]) {
 			errors_high |= (result_high ^ expected_high);
 			output_high |= result_high & (result_high ^ expected_high);
 
-			//printf("Low: Expected %d, Got %d; map[c] = %d\n", (int)expected_low, (int)result_low, (int)map[channel]);
-			//printf("High: Expected %d, Got %d; map[c] = %d\n", (int)expected_high, (int)result_high, (int)map[channel]);
+			//printf("Low: Expected %d, Got %d; map[%d] = %d\n", (int)expected_low, (int)result_low, (int)channel, (int)map[channel]);
+			//printf("High: Expected %d, Got %d; map[%d] = %d\n", (int)expected_high, (int)result_high, (int)channel, (int)map[channel]);
 		}
 
-			//printf("c: %d, Errors: %d\n", channel, (int)(errors_low));
-			//printf("c: %d, Output: %d\n", channel, (int)(output_low));
+		//printf("channel: %d, Errors (low): %d\n",  channel, (int)(errors_low));
+		//printf("channel: %d, Output (low): %d\n",  channel, (int)(output_low));
+		//printf("channel: %d, Errors (high): %d\n", channel, (int)(errors_high));
+		//printf("channel: %d, Output (high): %d\n", channel, (int)(output_high));
 
 		// Writes errors if they exist
 		if (errors_low != 0 || errors_high != 0) {
@@ -337,6 +337,7 @@ void sweep(int Hz, int r[]) {
 
 int printError(int r, int channel, char s[]) {
 	char tmp[140];
+	printf("Running printError() for channel %d; result = %#x\n", channel, r);
 
 	if (r != 0) {
 		// printf("Channel: %d\n", channel);
@@ -354,14 +355,16 @@ int printError(int r, int channel, char s[]) {
 				strcat(s, tmp);
 			}
 		}
-
+		//printf("printError() returning 1\n");
 		return 1;
 	}
+	//printf("printError() returning 0\n");
+	fflush(stdout);
 	return 0;
 }
 
 const char* getWire(int channel) {
-	// printf("Channel: %d\n", channel);
+	printf("Running getWire() for channel %d: maps to %d\n", channel, wire_map[channel]);
 
 	switch (wire_map[channel]) {
 		case CMD_P:
@@ -395,6 +398,7 @@ const char* getWire(int channel) {
 			return "D3-";
 			break;
 		default:
+			printf("Error: Invalid wire for channel %d\n", channel);
 			return "Error: invalid wire.";
 	}
 }
