@@ -22,24 +22,24 @@ const char* getWire(int channel);
 
 int main()
 {
-	// Setup
-	srand((unsigned) 69);
-	XGpio_Initialize(&gpio, XPAR_GPIO_0_DEVICE_ID);
-	init_platform();
-	// Main Loop: begin
-	while (1) {
-		// Ask user to initialize program.
-		// Note: use 'y' as flag to run
-		// There were issues in clearing characters and only using enter
-		// Do not enter characters after 'y' due to cable type bug
-		getStartChar();
+    // Setup
+    srand((unsigned) 69);
+    XGpio_Initialize(&gpio, XPAR_GPIO_0_DEVICE_ID);
+    init_platform();
+    // Main Loop: begin
+    while (1) {
+        // Ask user to initialize program.
+        // Note: use 'y' as flag to run
+        // There were issues in clearing characters and only using enter
+        // Do not enter characters after 'y' due to cable type bug
+        getStartChar();
 
-		sleep(1); // sleep to give GUI time to read beginning of test
-		printf("\nStarting continuity test\n");
-		//test();
-		run();
-	}
-	// Main Loop: end
+        sleep(1); // sleep to give GUI time to read beginning of test
+        printf("\nStarting continuity test\n");
+        //test();
+        run();
+    }
+    // Main Loop: end
 
     // Cleanup
     cleanup_platform();
@@ -49,32 +49,32 @@ int main()
 // Bits set to 0 are output/write and bits set to 1 are input/read.
 
 u32 gpio_read(u32 channel) {
-	XGpio_SetDataDirection(&gpio, 1, XGpio_GetDataDirection(&gpio, 1) | (1 << channel));
-	return (XGpio_DiscreteRead(&gpio, 1) & (1 << channel)) >> channel;
+    XGpio_SetDataDirection(&gpio, 1, XGpio_GetDataDirection(&gpio, 1) | (1 << channel));
+    return (XGpio_DiscreteRead(&gpio, 1) & (1 << channel)) >> channel;
 }
 
 void gpio_write(u32 channel, u32 data) {
-	XGpio_SetDataDirection(&gpio, 1, XGpio_GetDataDirection(&gpio, 1) & ~(1 << channel));
-	//printf("Writing: %d\n", (int)(0 | (data << channel)));
-	XGpio_DiscreteWrite(&gpio, 1, (0 | (data << channel)));
+    XGpio_SetDataDirection(&gpio, 1, XGpio_GetDataDirection(&gpio, 1) & ~(1 << channel));
+    //printf("Writing: %d\n", (int)(0 | (data << channel)));
+    XGpio_DiscreteWrite(&gpio, 1, (0 | (data << channel)));
 }
 
 // get character from user to begin
 void getStartChar() {
-	char c;
-	printf("Enter 'y' to begin continuity test: ");
-	c = getchar();
-	//printf("\nCharacter entered: ");
-	//putchar(c);
-	while (c != 'y') {
-		c = getchar();
-		//printf("\nCharacter entered: ");
-		//putchar(c);
-	}
+    char c;
+    printf("Enter 'y' to begin continuity test: ");
+    c = getchar();
+    //printf("\nCharacter entered: ");
+    //putchar(c);
+    while (c != 'y') {
+        c = getchar();
+        //printf("\nCharacter entered: ");
+        //putchar(c);
+    }
 }
 
 void test() {
-	printf("Begin test\n");
+    printf("Begin test\n");
 }
 
 void run() {

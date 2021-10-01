@@ -18,4 +18,21 @@ The client class that communicates on a serial port is defined here:
 ```
 python/client.py
 ```
+If needed, you can also connect a terminal to the serial port using TeraTerm (in Windows) or picocom (in Linux).
+
+Here are terminal commands for using picocom in Linux:
+
+Search for the device in /dev:
+```
+ls -l /dev | grep ttyACM
+```
+
+Start picocom using device (e.g. ttyAMC0):
+```
+sudo picocom -b 115200 -r -l /dev/ttyACM0
+```
+
+To see help menu in picocom, use CTRL+A, CTRL+H.
+
+To exist picocom, use CTRL+A, CTRL+X.
 
