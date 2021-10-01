@@ -85,10 +85,9 @@ void run() {
 
 	u32 read_mask = 0xFF << 6;
 	XGpio_SetDataDirection(&gpio, 2, read_mask);
-	//u8 result = (u8)(XGpio_DiscreteRead(&gpio, 2) >> 6);
+	u8 result = (u8)(XGpio_DiscreteRead(&gpio, 2) >> 6);
 
-	//if (result == 0b00000100) {
-	if (0) {
+	if (result == 0b00000100) {
 		printf("33-45 pin connectors detected!\n");
 
 		map = MAPPING_33_TO_45;
@@ -98,8 +97,7 @@ void run() {
 		int f = freqTest(reports);
 		printf("%d faults found\n%s", f, reports);
 
-	} else if (0) {
-	//} else if (result == 0b10000100) {
+	} else if (result == 0b10000100) {
 		printf("17-45 pin connectors detected!\n");
 		char reports[4][280];
 		int b_min = 1;
@@ -129,7 +127,7 @@ void run() {
 		map = MAPPING_17_TO_45_M3;
 		wire_map = WIRES_17_TO_45_M3;
 		int f4 = freqTest(reports[3]);
-		printf("%d faultsfflush(stdout); found\n", f4);
+		printf("%d faults found\n", f4);
 		if (f4 < f_min) {f_min = f3; b_min = 4; strcpy(mod, "Module 3");
 	}
 
