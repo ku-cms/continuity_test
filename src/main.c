@@ -194,7 +194,7 @@ int freqTest(char s[]) {
     for(int i = 0; i < freqsLength; i++) {
         results[i] = (int *)malloc(sizeof(int)*64);
     }
-    int freqTest(char s[]);
+
     for (int i = 0; i < freqsLength; i++) {
         printf("Sweep at %d Hz\n", freqs[i]);
         sweep(freqs[i], results[i]);
