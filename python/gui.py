@@ -348,7 +348,7 @@ class GUI():
 
     def read(self):
         self.write("READ")
-        data = self.client.read(timeout=15, nbytes=100000)
+        data = self.client.read(timeout=3, nbytes=100000)
         self.write(data)
         return
 
