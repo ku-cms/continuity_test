@@ -195,16 +195,16 @@ void sweep(int Hz, int r[]) {
         u32 errors_low = 0; u32 errors_high = 0; // Bits are 1 where there are errors
         u32 output_low = 0; u32 output_high = 0; // Determines if error is short or open circuit
 
-        //// ================================================ ////
-        //// ================================================ ////
-        //// ================================================ ////
-        //// !!!! REMEMBER SWAP p BACK TO 512 iterations !!! ////
-        //// !!!! REMEMBER SWAP data BACK TO random function (see comment) !!! ////
-        //// ================================================ ////
-        //// ================================================ ////
-        //// ================================================ ////
-        for (int p = 0; p < 1; p++) { // 512-bit test pattern index
-            int data = 1; //rand() % 2; // Actual bit to write per index
+        //// ===================================================== ////
+        //// ===================================================== ////
+        //// ===================================================== ////
+        //// !!!! REMEMBER SWAP p BACK TO 512 iterations     !!!   ////
+        //// !!!! REMEMBER SWAP data BACK TO random function !!!   ////
+        //// ===================================================== ////
+        //// ===================================================== ////
+        //// ===================================================== ////
+        for (int p = 0; p < 512; p++) { // 512-bit test pattern index
+            int data = rand() % 2;      // Actual bit to write per index
             //(pattern & (1 << (p%16))) >> (p%16);
 
             // Clears and writes to GPIO
