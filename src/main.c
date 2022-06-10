@@ -190,7 +190,7 @@ void sweep(int Hz, int r[]) {
         if (map[channel] < channel) {
             continue;
         }
-        printf("testing channel %d-%d\n", channel, map[channel]);
+        printf("testing gpio channels %d-%d\n", channel, map[channel]);
 
         u32 errors_low = 0; u32 errors_high = 0; // Bits are 1 where there are errors
         u32 output_low = 0; u32 output_high = 0; // Determines if error is short or open circuit
@@ -241,11 +241,11 @@ void sweep(int Hz, int r[]) {
             XGpio_SetDataDirection(&gpio, 2, mask_upper);
 
             // Results pulled from GPIO
-            u32 result_low = XGpio_DiscreteRead(&gpio, 1);
+            u32 result_low  = XGpio_DiscreteRead(&gpio, 1);
             u32 result_high = XGpio_DiscreteRead(&gpio, 2);
 
             // Finds expected values from read
-            u32 expected_low = (data << channel) | (data << (map[channel]));
+            u32 expected_low  = (data << channel) | (data << (map[channel]));
             u32 expected_high = (data << (channel-32)) | (data << (map[channel]-32));
 
             // error => XOR operator => If result is different from expected for a bit, then there is error at bit
@@ -254,16 +254,18 @@ void sweep(int Hz, int r[]) {
             // 		& operator filters out only the bits where an error is detected!
 
 
-            errors_low |= (result_low  ^ expected_low );
-            output_low  |= result_low  & (result_low  ^ expected_low );
+            errors_low  |= (result_low  ^ expected_low);
+            output_low  |= result_low  & (result_low  ^ expected_low);
 
             errors_high |= (result_high ^ expected_high);
             output_high |= result_high & (result_high ^ expected_high);
 
-//            printf("Low: Expected %d, Got %d; map[%d] = %d\n", (int)expected_low, (int)result_low, (int)channel, (int)map[channel]);
-//            printf("High: Expected %d, Got %d; map[%d] = %d\n", (int)expected_high, (int)result_high, (int)channel, (int)map[channel]);
+//            if (errors_low != 0 || errors_high != 0) {
+//            	printf("Errors low = %d, Errors high = %d\n", (int)errors_low, (int)errors_high);
+//                printf("Low: Expected %d, Got %d; map[%d] = %d\n", (int)expected_low, (int)result_low, (int)channel, (int)map[channel]);
+//                printf("High: Expected %d, Got %d; map[%d] = %d\n", (int)expected_high, (int)result_high, (int)channel, (int)map[channel]);
+//            }
         }
-
         // Writes errors if they exist
         if (errors_low != 0 || errors_high != 0) {
             for (int c = 0; c < 64; c++) {
@@ -271,18 +273,19 @@ void sweep(int Hz, int r[]) {
                 u32 errors = c < 32 ? errors_low : errors_high;
                 u32 output = c < 32 ? output_low : output_high;
 
-//                printf("Errors: %d\n", (int)errors);
-//                printf("Output: %d\n", (int)output);
+
 
                 int c_mod = c % 32;
+                //printf("Errors: %d\n", (int)errors);
+                //printf("Output: %d\n", (int)output);
                 if ((errors & (1 << c_mod)) >> c_mod == 1) { // 1 if there is an error at that channel
                     // See printError function to explain this
                 	if ((output & (1 << c_mod)) >> c_mod == 1) {
                         r[c] += 10; // Short
-//                        printf("Short at %d\n", c);
+                        printf("Short at %d\n", c);
                     } else { // Break
                         r[c] += 1;
-//                        printf("Break at %d\n", c);
+                        printf("Break at %d\n", c);
                     }
                 }
 
@@ -301,7 +304,6 @@ void sweep(int Hz, int r[]) {
 // => If both, wires are swapped.
 int printError(int r, int channel, char s[]) {
     char tmp[140];
-    printf("Running printError() for channel %d; result = %#x\n", channel, r);
     if (r != 0) {
         if (r % 2 == 1 && r >= 10) {
             sprintf(tmp, "Wire %s is swapped with another wire\n", getWire(channel));
